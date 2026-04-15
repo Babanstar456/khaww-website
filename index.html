@@ -1,924 +1,681 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Urbanix — Coming Soon</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Bebas+Neue&display=swap"
-        rel="stylesheet" />
-    <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        :root {
-            --black: #0a0a0a;
-            --white: #f5f5f5;
-            --gray-light: #e0e0e0;
-            --gray-mid: #888;
-            --gray-dark: #1c1c1c;
-            --accent: #ffffff;
-            --max-width: 1200px;
-        }
-        html, body {
-            height: 100%;
-            background: var(--black);
-            color: var(--white);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khaww — Coming Soon</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ─────────────────────────────────────────
-           LOADING SCREEN
-        ───────────────────────────────────────── */
-        #urbanix-loader {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #0a0a0a;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        #urbanix-loader.fade-out {
-            animation: loaderFadeOut 0.8s ease forwards;
-        }
-        @keyframes loaderFadeOut {
-            to { opacity: 0; pointer-events: none; }
-        }
+  :root {
+    --teal: #0ABFA3;
+    --teal-dark: #079E88;
+    --teal-deeper: #057A6A;
+    --teal-light: #E0FAF6;
+    --teal-mid: #5DD6C8;
+    --white: #FFFFFF;
+    --off-white: #F7FDFC;
+    --text-dark: #0A1628;
+    --text-mid: #2D5A54;
+  }
 
-        .ul-grid {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 48px 48px;
-            animation: gridPulse 3s ease-in-out infinite;
-        }
-        @keyframes gridPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0A1628;
+    color: var(--white);
+    overflow-x: hidden;
+  }
 
-        .ul-scanline {
-            position: absolute;
-            left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-            animation: scanline 2.2s linear infinite;
-        }
-        @keyframes scanline {
-            from { top: -2px; }
-            to { top: 100%; }
-        }
+  /* ─── LOADING SCREEN ─── */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: #0A1628;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #loader.hide {
+    opacity: 0;
+    visibility: hidden;
+  }
 
-        .ul-corner {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-        }
-        .ul-corner::before,
-        .ul-corner::after {
-            content: '';
-            position: absolute;
-            background: rgba(255,255,255,0.35);
-        }
-        .ul-corner::before { width: 100%; height: 1px; }
-        .ul-corner::after  { height: 100%; width: 1px; }
-        .ul-corner.tl { top: 24px; left: 24px; }
-        .ul-corner.tr { top: 24px; right: 24px; transform: scaleX(-1); }
-        .ul-corner.bl { bottom: 24px; left: 24px; transform: scaleY(-1); }
-        .ul-corner.br { bottom: 24px; right: 24px; transform: scale(-1); }
+  .loader-logo {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--white);
+    margin-bottom: 3rem;
+  }
+  .loader-logo span { color: var(--teal); }
 
-        .ul-center {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 20px;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-        }
+  .road-scene {
+    width: 340px;
+    height: 120px;
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
 
-        .ul-logo-ring {
-            width: 90px; height: 90px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 28px;
-            position: relative;
-            animation: ringRotate 4s linear infinite;
-        }
-        @keyframes ringRotate {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-        }
-        .ul-logo-ring::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 1.5px solid transparent;
-            border-top-color: rgba(255,255,255,0.85);
-            border-right-color: rgba(255,255,255,0.2);
-            animation: ringRotate 1.4s linear infinite;
-        }
-        .ul-logo-inner {
-            width: 64px; height: 64px;
-            border-radius: 50%;
-            background: #0a0a0a;
-            border: 1px solid rgba(255,255,255,0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: ringRotate 4s linear infinite reverse;
-        }
-        .ul-u-letter {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px;
-            color: #f5f5f5;
-            letter-spacing: 0.05em;
-            line-height: 1;
-        }
+  /* Road */
+  .road {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    background: #1E2D45;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .road::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -100%;
+    width: 300%;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--teal) 0px, var(--teal) 24px, transparent 24px, transparent 48px);
+    transform: translateY(-50%);
+    animation: road-move 0.5s linear infinite;
+  }
+  @keyframes road-move {
+    from { transform: translateY(-50%) translateX(0); }
+    to { transform: translateY(-50%) translateX(48px); }
+  }
 
-        .ul-brand {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(36px, 10vw, 64px);
-            letter-spacing: 0.3em;
-            color: #f5f5f5;
-            line-height: 1;
-            margin-bottom: 6px;
-            animation: glitch 5s ease-in-out infinite;
-        }
-        @keyframes glitch {
-            0%, 94%, 100% { text-shadow: none; transform: none; }
-            95%  { text-shadow: 3px 0 rgba(255,255,255,0.25), -2px 0 rgba(255,255,255,0.12); transform: skewX(-1.5deg); }
-            96%  { text-shadow: -3px 0 rgba(255,255,255,0.2); transform: skewX(0.8deg); }
-            97%  { text-shadow: 2px 0 rgba(255,255,255,0.15); transform: skewX(0); }
-            98%  { text-shadow: none; }
-        }
+  /* Scooter */
+  .scooter-wrap {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: scooter-bob 0.4s ease-in-out infinite alternate;
+  }
+  @keyframes scooter-bob {
+    from { transform: translateX(-50%) translateY(0px); }
+    to { transform: translateX(-50%) translateY(-3px); }
+  }
 
-        .ul-tagline {
-            font-size: clamp(9px, 2.5vw, 11px);
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.3);
-            margin-bottom: 40px;
-            font-weight: 400;
-        }
+  /* Exhaust puffs */
+  .puff {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(10, 191, 163, 0.25);
+    animation: puff-out 0.8s ease-out infinite;
+  }
+  .puff-1 { width: 10px; height: 10px; bottom: 40px; left: 38px; animation-delay: 0s; }
+  .puff-2 { width: 7px; height: 7px; bottom: 48px; left: 28px; animation-delay: 0.25s; }
+  .puff-3 { width: 5px; height: 5px; bottom: 53px; left: 20px; animation-delay: 0.5s; }
+  @keyframes puff-out {
+    0% { opacity: 0.8; transform: scale(1) translateX(0); }
+    100% { opacity: 0; transform: scale(2.5) translateX(-18px); }
+  }
 
-        .ul-status-line {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        .ul-status-dot {
-            width: 5px; height: 5px;
-            border-radius: 50%;
-            background: #f5f5f5;
-            animation: dotBlink 0.9s ease-in-out infinite;
-            flex-shrink: 0;
-        }
-        .ul-status-dot:nth-child(2) { animation-delay: 0.15s; }
-        .ul-status-dot:nth-child(3) { animation-delay: 0.30s; }
-        @keyframes dotBlink {
-            0%, 100% { opacity: 0.2; transform: scale(0.7); }
-            50%       { opacity: 1;   transform: scale(1.15); }
-        }
-        .ul-status-text {
-            font-size: clamp(10px, 2.5vw, 11px);
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.32);
-            font-weight: 300;
-            text-align: left;
-            min-width: 170px;
-        }
+  /* Progress bar */
+  .progress-track {
+    width: 280px;
+    height: 4px;
+    background: rgba(10, 191, 163, 0.15);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .loader-text {
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: rgba(10, 191, 163, 0.7);
+    text-transform: uppercase;
+  }
 
-        .ul-bar-wrap {
-            width: clamp(200px, 55vw, 340px);
-            height: 1px;
-            background: rgba(255,255,255,0.08);
-            margin: 0 auto 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        .ul-bar-fill {
-            height: 100%;
-            background: rgba(255,255,255,0.9);
-            width: 0%;
-            transition: width 0.25s ease;
-            position: relative;
-        }
-        .ul-bar-glow {
-            position: absolute;
-            top: -3px; right: -6px;
-            width: 12px; height: 7px;
-            background: rgba(255,255,255,0.7);
-            filter: blur(4px);
-            border-radius: 50%;
-        }
-        .ul-percent {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(11px, 3vw, 13px);
-            letter-spacing: 0.15em;
-            color: rgba(255,255,255,0.22);
-            margin-top: 10px;
-        }
+  /* ─── MAIN PAGE ─── */
+  #main {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 1s ease 0.3s;
+  }
+  #main.show { opacity: 1; }
 
-        .ul-ticker {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            overflow: hidden;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding: 10px 0;
-        }
-        .ul-ticker-track {
-            display: flex;
-            white-space: nowrap;
-            animation: tickerScroll 18s linear infinite;
-        }
-        .ul-ticker-track span {
-            font-size: clamp(9px, 2.5vw, 10px);
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.15);
-            padding: 0 20px;
-        }
-        @keyframes tickerScroll {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
-        }
+  /* Background subtle pattern */
+  #main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(10,191,163,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 90% 80%, rgba(10,191,163,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
 
-        /* ─────────────────────────────────────────
-           NOISE + GRID OVERLAYS
-        ───────────────────────────────────────── */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
-        }
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 0;
-        }
+  /* Grid lines */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(10,191,163,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(10,191,163,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
 
-        /* ─────────────────────────────────────────
-           MAIN PAGE
-        ───────────────────────────────────────── */
-        .page {
-            opacity: 0;
-            transition: opacity 0.6s ease 0.2s;
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .page.visible {
-            opacity: 1;
-        }
+  /* Nav */
+  nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 4rem;
+  }
+  .nav-logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--white);
+  }
+  .nav-logo span { color: var(--teal); }
 
-        /* ── Header ── */
-        .header-outer {
-            width: 100%;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2rem 3rem;
-            max-width: var(--max-width);
-            width: 100%;
-            margin: 0 auto;
-        }
+  .nav-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid rgba(10,191,163,0.4);
+    padding: 0.4rem 1rem;
+    border-radius: 99px;
+    background: rgba(10,191,163,0.07);
+  }
 
-        .nav-tag {
-            font-size: 11px;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--gray-mid);
-            font-weight: 400;
-        }
+  /* Hero */
+  .hero {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+  }
 
-        /* ── Logo ── */
-        .logo-lockup {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .logo-mark {
-            width: 64px;
-            height: auto;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .logo-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px;
-            letter-spacing: 0.25em;
-            color: var(--white);
-            line-height: 1;
-        }
-        .logo-sub {
-            font-size: 9px;
-            letter-spacing: 0.28em;
-            text-transform: uppercase;
-            color: var(--gray-mid);
-            margin-top: 4px;
-            font-weight: 400;
-        }
+  .eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--teal);
+    opacity: 0.5;
+  }
 
-        /* ── Main hero ── */
-        .main-outer {
-            flex: 1;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-        }
-        main {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 4rem 2rem;
-            width: 100%;
-            max-width: var(--max-width);
-            margin: 0 auto;
-        }
+  .hero-title {
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+  .hero-title .teal { color: var(--teal); }
+  .hero-title .outline {
+    -webkit-text-stroke: 2px rgba(255,255,255,0.25);
+    color: transparent;
+  }
 
-        .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 11px;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--gray-mid);
-            margin-bottom: 2.5rem;
-            font-weight: 400;
-        }
-        .eyebrow::before,
-        .eyebrow::after {
-            content: '';
-            display: block;
-            width: 32px;
-            height: 1px;
-            background: var(--gray-mid);
-        }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    font-weight: 300;
+    color: rgba(255,255,255,0.5);
+    margin-top: 1.5rem;
+    max-width: 480px;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+  .hero-sub strong { color: rgba(255,255,255,0.85); font-weight: 500; }
 
-        .hero-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(72px, 14vw, 160px);
-            line-height: 0.9;
-            letter-spacing: 0.05em;
-            color: var(--white);
-            margin-bottom: 2rem;
-        }
-        .hero-title span { display: block; }
-        .hero-title .outline {
-            -webkit-text-stroke: 1px rgba(255,255,255,0.35);
-            color: transparent;
-        }
+  /* Countdown */
+  .countdown-wrap {
+    margin: 3.5rem 0 3rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .time-num {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--white);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(10,191,163,0.2);
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    min-width: 90px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .time-num::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,191,163,0.06) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  .time-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+  .time-sep {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: rgba(10,191,163,0.4);
+    align-self: flex-start;
+    margin-top: 0.8rem;
+    line-height: 1;
+  }
 
-        .hero-desc {
-            max-width: 420px;
-            width: 100%;
-            font-size: 14px;
-            line-height: 1.9;
-            color: var(--gray-mid);
-            font-weight: 300;
-            letter-spacing: 0.04em;
-            margin-bottom: 3.5rem;
-            text-align: center;
-        }
+  /* Launch date pill */
+  .launch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(10,191,163,0.12);
+    border: 1px solid rgba(10,191,163,0.3);
+    border-radius: 99px;
+    padding: 0.6rem 1.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--teal);
+    letter-spacing: 0.05em;
+    margin-bottom: 3rem;
+  }
+  .launch-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--teal);
+    border-radius: 50%;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
 
-        /* ── Countdown ── */
-        .countdown-wrapper {
-            display: flex;
-            gap: 0;
-            margin-bottom: 4rem;
-            justify-content: center;
-            width: 100%;
-            max-width: 480px;
-        }
-        .countdown-unit {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            min-width: 0;
-            padding: 0 8px;
-        }
-        .countdown-unit + .countdown-unit {
-            border-left: 1px solid rgba(255,255,255,0.08);
-        }
-        .countdown-number {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(40px, 8vw, 72px);
-            line-height: 1;
-            color: var(--white);
-            letter-spacing: 0.04em;
-        }
-        .countdown-label {
-            font-size: 10px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--gray-mid);
-            margin-top: 6px;
-            font-weight: 400;
-        }
+  /* Notify form */
+  .notify-form {
+    display: flex;
+    gap: 0;
+    max-width: 460px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(10,191,163,0.25);
+    background: rgba(255,255,255,0.03);
+    transition: border-color 0.3s;
+  }
+  .notify-form:focus-within {
+    border-color: rgba(10,191,163,0.6);
+  }
+  .notify-form input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 1rem 1.2rem;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--white);
+    font-weight: 400;
+  }
+  .notify-form input::placeholder { color: rgba(255,255,255,0.25); }
+  .notify-form button {
+    background: var(--teal);
+    border: none;
+    padding: 1rem 1.6rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .notify-form button:hover { background: var(--teal-mid); }
 
-        /* ── Email form ── */
-        .notify-form {
-            display: flex;
-            gap: 0;
-            border: 1px solid rgba(255,255,255,0.14);
-            overflow: hidden;
-            max-width: 420px;
-            width: 100%;
-            margin: 0 auto;
-        }
-        .notify-form input[type="email"] {
-            flex: 1;
-            min-width: 0;
-            background: transparent;
-            border: none;
-            outline: none;
-            padding: 14px 20px;
-            font-size: 13px;
-            color: var(--white);
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 0.03em;
-        }
-        .notify-form input[type="email"]::placeholder {
-            color: rgba(255,255,255,0.25);
-        }
-        .notify-form button {
-            background: var(--white);
-            color: var(--black);
-            border: none;
-            padding: 14px 24px;
-            font-size: 11px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .notify-form button:hover { background: var(--gray-light); }
+  .notify-note {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.2);
+    margin-top: 0.8rem;
+    letter-spacing: 0.05em;
+  }
 
-        .success-msg {
-            display: none;
-            font-size: 12px;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--gray-mid);
-            margin-top: 14px;
-            text-align: center;
-        }
+  /* Feature pills */
+  .features {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0 2rem 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .feat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 99px;
+    padding: 0.5rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.03em;
+  }
+  .feat-icon {
+    width: 16px;
+    height: 16px;
+    background: var(--teal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--text-dark);
+    font-weight: 900;
+    flex-shrink: 0;
+  }
 
-        /* ── Marquee strip ── */
-        .marquee-strip {
-            overflow: hidden;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            padding: 12px 0;
-            margin-top: 4rem;
-            width: 100vw;
-            margin-left: calc(-50vw + 50%);
-        }
-        .marquee-track {
-            display: flex;
-            white-space: nowrap;
-            animation: marquee 28s linear infinite;
-        }
-        .marquee-track span {
-            font-size: 11px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.2);
-            font-weight: 400;
-            padding: 0 24px;
-        }
-        .marquee-track span.dot {
-            color: rgba(255,255,255,0.12);
-            font-size: 14px;
-            padding: 0 8px;
-            letter-spacing: 0;
-        }
-        @keyframes marquee {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
-        }
+  /* Bottom strip */
+  .bottom-strip {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 2rem;
+  }
+  .strip-left {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.05em;
+  }
+  .city-list {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .city {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.18);
+  }
+  .city.active { color: rgba(10,191,163,0.6); }
 
-        /* ── Footer ── */
-        .footer-outer {
-            width: 100%;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-        footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2rem 3rem;
-            max-width: var(--max-width);
-            width: 100%;
-            margin: 0 auto;
-        }
-        .footer-left {
-            font-size: 11px;
-            color: rgba(255,255,255,0.2);
-            letter-spacing: 0.1em;
-        }
-        .social-links { display: flex; gap: 24px; }
-        .social-links a {
-            font-size: 11px;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.3);
-            text-decoration: none;
-            transition: color 0.2s ease;
-            font-weight: 400;
-        }
-        .social-links a:hover { color: var(--white); }
+  /* Floating orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 {
+    width: 600px; height: 600px;
+    top: -200px; right: -150px;
+    background: radial-gradient(circle, rgba(10,191,163,0.07) 0%, transparent 70%);
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    bottom: -100px; left: -100px;
+    background: radial-gradient(circle, rgba(10,191,163,0.05) 0%, transparent 70%);
+  }
 
-        /* ─────────────────────────────────────────
-           RESPONSIVE
-        ───────────────────────────────────────── */
-        @media (max-width: 768px) {
-            header {
-                padding: 1.5rem 1.5rem;
-            }
-            footer {
-                padding: 1.5rem;
-                flex-direction: column;
-                gap: 16px;
-                text-align: center;
-            }
-            main {
-                padding: 3rem 1.5rem;
-            }
-            .notify-form {
-                flex-direction: column;
-            }
-            .notify-form button {
-                width: 100%;
-                text-align: center;
-                padding: 14px;
-            }
-            .ul-corner.tl { top: 16px; left: 16px; }
-            .ul-corner.tr { top: 16px; right: 16px; }
-            .ul-corner.bl { bottom: 16px; left: 16px; }
-            .ul-corner.br { bottom: 16px; right: 16px; }
-        }
+  /* Success state */
+  .success-msg {
+    display: none;
+    font-size: 0.85rem;
+    color: var(--teal);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+  }
 
-        @media (max-width: 480px) {
-            header {
-                padding: 1.25rem 1rem;
-            }
-            .nav-tag {
-                font-size: 9px;
-                letter-spacing: 0.1em;
-            }
-            main {
-                padding: 2.5rem 1rem;
-            }
-            .hero-desc {
-                font-size: 13px;
-                margin-bottom: 2.5rem;
-            }
-            .countdown-wrapper {
-                margin-bottom: 2.5rem;
-            }
-            .countdown-unit {
-                padding: 0 4px;
-            }
-            .countdown-label {
-                font-size: 9px;
-                letter-spacing: 0.12em;
-            }
-            footer {
-                padding: 1.25rem 1rem;
-            }
-            .eyebrow {
-                font-size: 10px;
-                gap: 8px;
-                margin-bottom: 1.5rem;
-            }
-            .eyebrow::before,
-            .eyebrow::after {
-                width: 20px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .nav-tag {
-                display: none;
-            }
-            header {
-                justify-content: center;
-            }
-        }
-    </style>
+  @media (max-width: 640px) {
+    nav { padding: 1.5rem 1.5rem; }
+    .bottom-strip { padding: 1.5rem; flex-direction: column; gap: 1rem; }
+    .countdown-wrap { gap: 0.8rem; }
+    .time-num { min-width: 68px; padding: 0.6rem 0.8rem; }
+    .city-list { gap: 1rem; }
+  }
+</style>
 </head>
 <body>
 
-    <!-- LOADING SCREEN -->
-    <div id="urbanix-loader">
-        <div class="ul-grid"></div>
-        <div class="ul-scanline"></div>
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <div class="loader-logo">Kh<span>aw</span>w</div>
 
-        <div class="ul-corner tl"></div>
-        <div class="ul-corner tr"></div>
-        <div class="ul-corner bl"></div>
-        <div class="ul-corner br"></div>
+  <div class="road-scene">
+    <!-- Exhaust puffs -->
+    <div class="puff puff-1"></div>
+    <div class="puff puff-2"></div>
+    <div class="puff puff-3"></div>
 
-        <div class="ul-center">
-            <div class="ul-logo-ring">
-                <div class="ul-logo-inner">
-                    <span class="ul-u-letter">U</span>
-                </div>
-            </div>
-
-            <div class="ul-brand">URBANIX</div>
-            <div class="ul-tagline">Premium Streetwear</div>
-
-            <div class="ul-status-line">
-                <div class="ul-status-dot"></div>
-                <div class="ul-status-dot"></div>
-                <div class="ul-status-dot"></div>
-                <span class="ul-status-text" id="ul-status-msg">Initializing collection</span>
-            </div>
-
-            <div class="ul-bar-wrap">
-                <div class="ul-bar-fill" id="ul-bar">
-                    <div class="ul-bar-glow"></div>
-                </div>
-            </div>
-            <div class="ul-percent" id="ul-pct">0%</div>
-        </div>
-
-        <div class="ul-ticker">
-            <div class="ul-ticker-track" id="ul-ticker-track"></div>
-        </div>
+    <!-- Scooter SVG -->
+    <div class="scooter-wrap">
+      <svg width="110" height="72" viewBox="0 0 110 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Rear wheel -->
+        <circle cx="22" cy="57" r="13" stroke="#0ABFA3" stroke-width="2.5" fill="#0A1628"/>
+        <circle cx="22" cy="57" r="5" fill="#0ABFA3" opacity="0.5"/>
+        <!-- Front wheel -->
+        <circle cx="86" cy="57" r="13" stroke="#0ABFA3" stroke-width="2.5" fill="#0A1628"/>
+        <circle cx="86" cy="57" r="5" fill="#0ABFA3" opacity="0.5"/>
+        <!-- Body frame -->
+        <path d="M22 44 Q30 28 48 26 L72 26 L86 44" stroke="#0ABFA3" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M48 26 L36 44" stroke="#0ABFA3" stroke-width="2" fill="none"/>
+        <!-- Seat -->
+        <rect x="44" y="20" width="28" height="9" rx="4" fill="#0ABFA3" opacity="0.8"/>
+        <!-- Handlebar -->
+        <line x1="82" y1="26" x2="82" y2="18" stroke="#0ABFA3" stroke-width="2" stroke-linecap="round"/>
+        <line x1="76" y1="18" x2="90" y2="18" stroke="#0ABFA3" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Delivery box -->
+        <rect x="46" y="4" width="24" height="20" rx="4" fill="none" stroke="#0ABFA3" stroke-width="2"/>
+        <text x="58" y="17" text-anchor="middle" font-size="8" font-weight="700" fill="#0ABFA3" font-family="Inter, sans-serif">KW</text>
+        <!-- Rider body -->
+        <circle cx="70" cy="13" r="7" fill="#0ABFA3" opacity="0.9"/>
+        <path d="M63 20 Q66 28 72 28 Q76 28 78 26 L74 20" fill="#0ABFA3" opacity="0.7"/>
+        <!-- Helmet visor -->
+        <path d="M65 13 Q65 9 70 9 Q75 9 75 13" stroke="#0A1628" stroke-width="1.5" fill="none"/>
+      </svg>
     </div>
 
-    <!-- MAIN PAGE -->
-    <div class="page" id="main-page">
+    <!-- Road -->
+    <div class="road"></div>
+  </div>
 
-        <!-- Header -->
-        <div class="header-outer">
-            <header>
-                <span class="nav-tag">Est. 2026</span>
-                <div class="logo-lockup">
-                    <img class="logo-mark" src="urbanic.png" alt="Urbanix logo mark" onerror="this.style.display='none'" />
-                    <div class="logo-name">Urbanix</div>
-                    <div class="logo-sub">Premium Streetwear</div>
-                </div>
-                <span class="nav-tag">Collection 01</span>
-            </header>
-        </div>
-
-        <!-- Main -->
-        <div class="main-outer">
-            <main>
-                <div class="eyebrow">Something is coming</div>
-                <h1 class="hero-title">
-                    <span>We're</span>
-                    <span class="outline">Almost</span>
-                    <span>Here.</span>
-                </h1>
-                <p class="hero-desc">
-                    Premium streetwear built for those who move differently.
-                    Urbanix Collection 01 drops soon — designed for the streets,
-                    refined for the culture.
-                </p>
-
-                <!-- Countdown Timer -->
-                <div class="countdown-wrapper" id="countdown">
-                    <div class="countdown-unit">
-                        <div class="countdown-number" id="cd-days">00</div>
-                        <div class="countdown-label">Days</div>
-                    </div>
-                    <div class="countdown-unit">
-                        <div class="countdown-number" id="cd-hours">00</div>
-                        <div class="countdown-label">Hours</div>
-                    </div>
-                    <div class="countdown-unit">
-                        <div class="countdown-number" id="cd-mins">00</div>
-                        <div class="countdown-label">Minutes</div>
-                    </div>
-                    <div class="countdown-unit">
-                        <div class="countdown-number" id="cd-secs">00</div>
-                        <div class="countdown-label">Seconds</div>
-                    </div>
-                </div>
-
-                <!-- Email Capture -->
-                <form class="notify-form" id="notifyForm" onsubmit="handleSubmit(event)">
-                    <input type="email" id="emailInput" placeholder="Enter your email for early access" required />
-                    <button type="submit">Notify Me</button>
-                </form>
-                <div class="success-msg" id="successMsg">&#x2714;&nbsp; You're on the list. We'll be in touch.</div>
-
-                <!-- Scrolling ticker -->
-                <div class="marquee-strip">
-                    <div class="marquee-track" id="ticker"></div>
-                </div>
-            </main>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer-outer">
-            <footer>
-                <span class="footer-left">&copy; 2026 Urbanix. All rights reserved.</span>
-                <nav class="social-links">
-                    <a href="https://www.instagram.com/urbanix_shop" target="_blank" rel="noopener">Instagram</a>
-                </nav>
-            </footer>
-        </div>
-
-    </div>
-
-    <script>
-        // Loader ticker
-        const loaderWords = ['Premium Streetwear','·','Collection 01','·','Made for the Streets','·','Urbanix','·','Drop Soon','·','Elevated Culture','·','Black & White','·','Redefine the Block','·'];
-        const loaderTrack = document.getElementById('ul-ticker-track');
-        [...loaderWords, ...loaderWords].forEach(w => {
-            const s = document.createElement('span');
-            s.textContent = w;
-            loaderTrack.appendChild(s);
-        });
-
-        // Progress bar logic
-        const statusMsgs = [
-            'Initializing collection',
-            'Loading textures',
-            'Curating the drop',
-            'Pressing fabric',
-            'Almost ready'
-        ];
-        const bar    = document.getElementById('ul-bar');
-        const pctEl  = document.getElementById('ul-pct');
-        const msgEl  = document.getElementById('ul-status-msg');
-        const loader = document.getElementById('urbanix-loader');
-        const page   = document.getElementById('main-page');
-
-        let progress = 0;
-        const steps = [
-            { target: 18, duration: 500 },
-            { target: 42, duration: 700 },
-            { target: 61, duration: 600 },
-            { target: 83, duration: 800 },
-            { target: 100, duration: 600 }
-        ];
-        let stepIdx = 0;
-
-        function runStep() {
-            if (stepIdx >= steps.length) {
-                setTimeout(() => {
-                    loader.classList.add('fade-out');
-                    page.classList.add('visible');
-                    setTimeout(() => { loader.style.display = 'none'; }, 850);
-                }, 320);
-                return;
-            }
-            const step = steps[stepIdx];
-            msgEl.textContent = statusMsgs[stepIdx] || statusMsgs[statusMsgs.length - 1];
-            const from = progress;
-            const to   = step.target;
-            const dur  = step.duration;
-            const t0   = performance.now();
-
-            function tick(now) {
-                const elapsed = now - t0;
-                const t = Math.min(elapsed / dur, 1);
-                const ease = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
-                progress = Math.round(from + (to - from) * ease);
-                bar.style.width = progress + '%';
-                pctEl.textContent = progress + '%';
-                if (t < 1) {
-                    requestAnimationFrame(tick);
-                } else {
-                    stepIdx++;
-                    setTimeout(runStep, stepIdx < steps.length ? 120 : 0);
-                }
-            }
-            requestAnimationFrame(tick);
-        }
-
-        setTimeout(runStep, 400);
-
-        // Countdown
-        const launchDate = new Date('2026-05-15T00:00:00');
-        function pad(n) { return String(n).padStart(2, '0'); }
-        function updateCountdown() {
-            const diff = launchDate - new Date();
-            if (diff <= 0) {
-                ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => {
-                    document.getElementById(id).textContent = '00';
-                });
-                return;
-            }
-            document.getElementById('cd-days').textContent  = pad(Math.floor(diff / 864e5));
-            document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 864e5) / 36e5));
-            document.getElementById('cd-mins').textContent  = pad(Math.floor((diff % 36e5) / 6e4));
-            document.getElementById('cd-secs').textContent  = pad(Math.floor((diff % 6e4) / 1e3));
-        }
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-
-        // Email submit
-        function handleSubmit(e) {
-            e.preventDefault();
-            document.getElementById('notifyForm').style.display = 'none';
-            document.getElementById('successMsg').style.display = 'block';
-        }
-
-        // Main page marquee
-        const words = [
-            'Premium Streetwear', '·', 'Collection 01', '·',
-            'Made for the Streets', '·', 'Urbanix', '·',
-            'Drop Soon', '·', 'Elevated Culture', '·',
-            'Black & White', '·', 'Redefine the Block', '·'
-        ];
-        const ticker = document.getElementById('ticker');
-        [...words, ...words].map(w => {
-            const s = document.createElement('span');
-            s.textContent = w;
-            if (w === '·') s.classList.add('dot');
-            return s;
-        }).forEach(el => ticker.appendChild(el));
-    </script>
-<!-- KEEP EVERYTHING ABOVE EXACTLY SAME -->
-
-<!-- ── Email form ── -->
-<form id="notifyForm" class="notify-form" onsubmit="handleSubmit(event)">
-    <input 
-        type="email" 
-        id="emailInput"
-        placeholder="Enter your email" 
-        required
-    />
-    <button type="submit">Notify Me</button>
-</form>
-
-<div id="successMsg" class="success-msg">
-    You're on the list.
+  <div class="progress-track">
+    <div class="progress-fill" id="prog"></div>
+  </div>
+  <div class="loader-text" id="loader-text">Preparing your meal…</div>
 </div>
 
-<!-- KEEP EVERYTHING BELOW EXACTLY SAME -->
+<!-- MAIN PAGE -->
+<div id="main">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="grid-bg"></div>
 
-<!-- ADD THIS JUST BEFORE </body> -->
+  <nav>
+    <div class="nav-logo">Kh<span>aw</span>w</div>
+    <div class="nav-badge">Dropping Soon</div>
+  </nav>
+
+  <section class="hero">
+    <div class="eyebrow">Food delivery, reimagined</div>
+
+    <div class="hero-title">
+      <div>Hunger</div>
+      <div class="teal">doesn't</div>
+      <div class="outline">wait.</div>
+    </div>
+
+    <p class="hero-sub">
+      <strong>Khaww</strong> is a premium food delivery experience launching across India — bringing you the finest bites from top restaurants, right at your door.
+    </p>
+
+    <div class="countdown-wrap">
+      <div class="time-block">
+        <div class="time-num" id="cd-days">00</div>
+        <div class="time-label">Days</div>
+      </div>
+      <div class="time-sep">:</div>
+      <div class="time-block">
+        <div class="time-num" id="cd-hours">00</div>
+        <div class="time-label">Hours</div>
+      </div>
+      <div class="time-sep">:</div>
+      <div class="time-block">
+        <div class="time-num" id="cd-mins">00</div>
+        <div class="time-label">Mins</div>
+      </div>
+      <div class="time-sep">:</div>
+      <div class="time-block">
+        <div class="time-num" id="cd-secs">00</div>
+        <div class="time-label">Secs</div>
+      </div>
+    </div>
+
+    <div class="launch-pill">
+      <div class="launch-dot"></div>
+      Launching June 15, 2026
+    </div>
+
+    <div class="notify-form">
+      <input type="email" id="email-input" placeholder="Enter your email for early access" />
+      <button onclick="handleNotify()">Notify Me</button>
+    </div>
+    <div class="notify-note">No spam. Just a heads-up when we go live.</div>
+    <div class="success-msg" id="success">✓ You're on the list! See you June 15th.</div>
+  </section>
+
+  <div class="features">
+    <div class="feat-pill"><div class="feat-icon">★</div>Top-rated restaurants</div>
+    <div class="feat-pill"><div class="feat-icon">⚡</div>30-min delivery</div>
+    <div class="feat-pill"><div class="feat-icon">✦</div>Live order tracking</div>
+    <div class="feat-pill"><div class="feat-icon">◆</div>No hidden fees</div>
+    <div class="feat-pill"><div class="feat-icon">●</div>Premium packaging</div>
+    <div class="feat-pill"><div class="feat-icon">▲</div>Exclusive chef picks</div>
+  </div>
+
+  <div class="bottom-strip">
+    <div class="strip-left">© 2026 Khaww. All rights reserved.</div>
+    <div class="city-list">
+      <div class="city active">Mumbai</div>
+      <div class="city active">Delhi</div>
+      <div class="city active">Bengaluru</div>
+      <div class="city">Kolkata</div>
+      <div class="city">Hyderabad</div>
+      <div class="city">Chennai</div>
+    </div>
+  </div>
+</div>
+
 <script>
-function handleSubmit(e) {
-    e.preventDefault();
+  // ─── LOADER ───
+  const msgs = ["Preparing your meal…", "Finding the best spots…", "Almost there…", "Ready to deliver!"];
+  let prog = 0;
+  const fill = document.getElementById('prog');
+  const loaderText = document.getElementById('loader-text');
+  const interval = setInterval(() => {
+    prog += Math.random() * 4 + 1.5;
+    if (prog >= 100) prog = 100;
+    fill.style.width = prog + '%';
+    const idx = Math.floor((prog / 100) * msgs.length);
+    loaderText.textContent = msgs[Math.min(idx, msgs.length - 1)];
+    if (prog >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hide');
+        document.getElementById('main').classList.add('show');
+      }, 600);
+    }
+  }, 60);
 
-    const email = document.getElementById('emailInput').value;
+  // ─── COUNTDOWN ───
+  function updateCountdown() {
+    const launch = new Date('2026-06-15T00:00:00');
+    const now = new Date();
+    const diff = launch - now;
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '00';
+      document.getElementById('cd-hours').textContent = '00';
+      document.getElementById('cd-mins').textContent = '00';
+      document.getElementById('cd-secs').textContent = '00';
+      return;
+    }
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+    document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 
-    fetch("https://script.google.com/macros/s/AKfycbwjLRin9gzzgA7AyMiairYq-DyGe1u-n8Mjfmo6J_B7frXOukZ5JSANey7iMnjk9kSA/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email: email })
-    });
-
-    // UI feedback
-    document.getElementById('notifyForm').style.display = 'none';
-    document.getElementById('successMsg').style.display = 'block';
-}
+  // ─── NOTIFY ───
+  function handleNotify() {
+    const email = document.getElementById('email-input').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('email-input').style.borderBottom = '1px solid rgba(255,80,80,0.5)';
+      return;
+    }
+    document.querySelector('.notify-form').style.display = 'none';
+    document.querySelector('.notify-note').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+  }
 </script>
 </body>
 </html>
