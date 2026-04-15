@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khaww Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .config-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .config-section h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .api-config {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .api-config input {
+            flex: 1;
+            min-width: 300px;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .api-config input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.95);
+            color: #2d3748;
+            border-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            color: #2d3748;
+            font-size: 1.8rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+            color: #2d3748;
+            box-shadow: 0 4px 15px rgba(255, 212, 59, 0.3);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #fef5e7; color: #d69e2e; }
+        .status-preparing { background: #e3f2fd; color: #1976d2; }
+        .status-ready { background: #e8f5e8; color: #2e7d32; }
+        .status-delivered { background: #e8f5e8; color: #2e7d32; }
+        .status-cancelled { background: #ffebee; color: #c62828; }
+        .status-online { background: #e8f5e8; color: #2e7d32; }
+        .status-offline { background: #ffebee; color: #c62828; }
+
+        .payment-success { background: #e8f5e8; color: #2e7d32; }
+        .payment-pending { background: #fef5e7; color: #d69e2e; }
+        .payment-failed { background: #ffebee; color: #c62828; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-filters input,
+        .search-filters select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                justify-content: center;
+            }
+            
+            .tab {
+                font-size: 0.9rem;
+                padding: 10px 15px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                font-size: 0.8rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 10px 8px;
+            }
+        }
+        .verification-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .table-container td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .table-container tr:hover {
+            background-color: #f7fafc;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>Khaww Admin Panel</h1>
+            <p>Complete management system for restaurants, customers, orders, and payments</p>
+        </div>
+
+        <div class="config-section">
+            <h3>API Configuration</h3>
+            <div class="api-config">
+                <input type="text" id="apiBaseUrl" placeholder="API Base URL" value="https://khaww.onrender.com">
+                <button class="btn btn-sm" onclick="testConnection()">Test Connection</button>
+                <div id="connectionStatus"></div>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <h3 id="totalRestaurants">-</h3>
+                <p>Total Restaurants</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalOrders">-</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="activeOrders">-</h3>
+                <p>Active Orders</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalRevenue">₹0</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+            <div class="tab" onclick="showTab('restaurants')">Restaurants</div>
+            <div class="tab" onclick="showTab('orders')">Orders</div>
+            <div class="tab" onclick="showTab('customers')">Customers</div>
+            <div class="tab" onclick="showTab('menu')">Menu Management</div>
+            <div class="tab" onclick="showTab('categories')">Categories</div>
+            <div class="tab" onclick="showTab('payments')">Payments</div>
+            <div class="tab" onclick="showTab('verification')">Verification</div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="section-header">
+                <h2>Dashboard Overview</h2>
+                <button class="btn" onclick="refreshDashboard()">Refresh Data</button>
+            </div>
+            <div id="dashboardContent">
+                <p>Loading dashboard data...</p>
+            </div>
+        </div>
+
+        <!-- Restaurants Tab -->
+        <div id="restaurants" class="tab-content">
+            <div class="section-header">
+                <h2>Restaurant Management</h2>
+                <button class="btn" onclick="showAddRestaurantModal()">Add Restaurant</button>
+            </div>
+            
+            <div class="search-filters">
+                <input type="text" id="restaurantSearch" placeholder="Search restaurants..." onkeyup="filterRestaurants()">
+                <select id="restaurantStatusFilter" onchange="filterRestaurants()">
+                    <option value="">All Status</option>
+                    <option value="1">Online</option>
+                    <option value="0">Offline</option>
+                </select>
+            </div>
+
+            <table class="data-table" id="restaurantsTable">
+                <thead>
+                    <tr>
+                        <th>UID</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Email</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="restaurantsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders" class="tab-content">
+            <div class="section-header">
+                <h2>Order Management</h2>
+                <button class="btn" onclick="refreshOrders()">Refresh Orders</button>
+            </div>
+
+            <div class="search-filters">
+                <input type="text" id="orderSearch" placeholder="Search orders..." onkeyup="filterOrders()">
+                <select id="orderStatusFilter" onchange="filterOrders()">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="preparing">Preparing</option>
+                    <option value="ready">Ready</option>
+                    <option value="on_the_way">On The Way</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select id="paymentStatusFilter" onchange="filterOrders()">
+                    <option value="">All Payment Status</option>
+                    <option value="success">Success</option>
+                    <option value="pending">Pending</option>
+                    <option value="failed">Failed</option>
+                </select>
+            </div>
+
+            <table class="data-table" id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Restaurant</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Customers Tab -->
+        <div id="customers" class="tab-content">
+            <div class="section-header">
+                <h2>Customer Management</h2>
+            </div>
+
+            <div class="search-filters">
+                <input type="text" id="customerSearch" placeholder="Search customers..." onkeyup="filterCustomers()">
+            </div>
+
+            <table class="data-table" id="customersTable">
+                <thead>
+                    <tr>
+                        <th>UID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Addresses</th>
+                        <th>Total Orders</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="customersTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Menu Management Tab -->
+        <div id="menu" class="tab-content">
+            <div class="section-header">
+                <h2>Menu Management</h2>
+                <div>
+                    <select id="menuRestaurantFilter" onchange="loadMenuItems()">
+                        <option value="">Select Restaurant</option>
+                    </select>
+                    <button class="btn" onclick="showAddMenuItemModal()">Add Menu Item</button>
+                </div>
+            </div>
+
+            <table class="data-table" id="menuTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Type</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="menuTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Categories Tab -->
+        <div id="categories" class="tab-content">
+            <div class="section-header">
+                <h2>Category Management</h2>
+                <button class="btn" onclick="showAddCategoryModal()">Add Category</button>
+            </div>
+
+            <div class="search-filters">
+                <select id="categoryRestaurantFilter" onchange="loadCategories()">
+                    <option value="">Select Restaurant</option>
+                </select>
+            </div>
+
+            <table class="data-table" id="categoriesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Restaurant UID</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="categoriesTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Payments Tab -->
+        <div id="payments" class="tab-content">
+            <div class="section-header">
+                <h2>Payment Management</h2>
+                <button class="btn" onclick="refreshPayments()">Refresh</button>
+            </div>
+
+            <table class="data-table" id="paymentsTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Payment ID</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Method</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsTableBody">
+                </tbody>
+            </table>
+        </div>
+    <div id="verification" class="tab-content">
+            <div class="section-header">
+                <h2>Restaurant Verification Management</h2>
+                <button class="btn" onclick="refreshVerification()">Refresh Data</button>
+            </div>
+            
+            <div class="search-filters">
+                <input type="text" id="verificationSearch" placeholder="Search restaurants..." onkeyup="filterVerification()">
+                <select id="verificationStatusFilter" onchange="filterVerification()">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending Verification</option>
+                    <option value="verified">Verified</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="not_submitted">Documents Not Submitted</option>
+                </select>
+            </div>
+
+            <div class="verification-stats">
+                <div class="stat-card">
+                    <h3 id="pendingVerifications">-</h3>
+                    <p>Pending Verifications</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="verifiedRestaurants">-</h3>
+                    <p>Verified Restaurants</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="rejectedRestaurants">-</h3>
+                    <p>Rejected Restaurants</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="documentsNotSubmitted">-</h3>
+                    <p>Documents Not Submitted</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Restaurant Name</th>
+                            <th>Location</th>
+                            <th>Email</th>
+                            <th>Documents Submitted</th>
+                            <th>Verification Status</th>
+                            <th>Submission Date</th>
+                            <th>Verification Date</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verificationTableBody">
+                        <!-- Verification data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Add Restaurant Modal -->
+    <div id="addRestaurantModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addRestaurantModal')">&times;</span>
+            <h2>Add New Restaurant</h2>
+            <form id="addRestaurantForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Restaurant UID:</label>
+                        <input type="text" id="newRestaurantUid" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Restaurant Name:</label>
+                        <input type="text" id="newRestaurantName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <input type="text" id="newRestaurantLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="newRestaurantEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newRestaurantPureVeg">
+                            <label>Pure Vegetarian</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Add Restaurant</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Restaurant Modal -->
+    <div id="editRestaurantModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editRestaurantModal')">&times;</span>
+            <h2>Edit Restaurant</h2>
+            <form id="editRestaurantForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Restaurant Name:</label>
+                        <input type="text" id="editRestaurantName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <input type="text" id="editRestaurantLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="editRestaurantEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="editRestaurantPureVeg">
+                            <label>Pure Vegetarian</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Update Restaurant</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Menu Item Modal -->
+    <div id="addMenuItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addMenuItemModal')">&times;</span>
+            <h2>Add Menu Item</h2>
+            <form id="addMenuItemForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Restaurant:</label>
+                        <select id="newMenuRestaurant" required>
+                            <option value="">Select Restaurant</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="newMenuCategory" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Item Name:</label>
+                        <input type="text" id="newMenuName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price:</label>
+                        <input type="number" id="newMenuPrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description:</label>
+                        <textarea id="newMenuDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL:</label>
+                        <input type="url" id="newMenuImageUrl">
+                    </div>
+                    <div class="form-group">
+                        <label>Food Type:</label>
+                        <select id="newMenuFoodType" required>
+                            <option value="0">Vegetarian</option>
+                            <option value="1">Non-Vegetarian</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="newMenuAvailable" checked>
+                            <label>Available</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Add Menu Item</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addCategoryModal')">&times;</span>
+            <h2>Add Category</h2>
+            <form id="addCategoryForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Restaurant:</label>
+                        <select id="newCategoryRestaurant" required>
+                            <option value="">Select Restaurant</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category Name:</label>
+                        <input type="text" id="newCategoryName" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Add Category</button>
+            </form>
+        </div>
+    </div>
+    <div id="verificationActionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('verificationActionModal')">&times;</span>
+            <h2 id="verificationActionTitle">Verify Restaurant</h2>
+            <div id="verificationRestaurantInfo" class="restaurant-info">
+                <!-- Restaurant info will be populated here -->
+            </div>
+            <form id="verificationActionForm">
+                <div class="form-group">
+                    <label>Verification Decision:</label>
+                    <select id="verificationDecision" required>
+                        <option value="">Select Decision</option>
+                        <option value="verified">Approve (Verify)</option>
+                        <option value="rejected">Reject</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional):</label>
+                    <textarea id="verificationNotes" rows="4" placeholder="Add any notes about the verification decision..."></textarea>
+                </div>
+                <button type="submit" class="btn">Submit Decision</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('orderDetailsModal')">&times;</span>
+            <h2>Order Details</h2>
+            <div id="orderDetailsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        
+        const API_BASE_URL = 'http://localhost:5001';
+        let currentRestaurants = [];
+        let currentOrders = [];
+        let currentCustomers = [];
+        let currentEditingRestaurant = null;
+        let currentVerificationRestaurant = null;
+               let currentVerificationData = [];
+        // Initialize the admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            testConnection();
+            loadDashboardData();
+            loadRestaurants();
+            setupFormHandlers();
+            
+        });
+
+        // Show/Hide tabs
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            // Load data when switching to specific tabs
+            if (tabName === 'restaurants') loadRestaurants();
+            if (tabName === 'orders') loadOrders();
+            if (tabName === 'customers') loadCustomers();
+            if (tabName === 'menu') loadMenuItems();
+            if (tabName === 'categories') loadCategories();
+            if (tabName === 'payments') loadPayments();
+            if (tabName === 'verification')loadVerificationData();
+                    
+        }
+
+        // Test API connection
+        async function testConnection() {
+            const baseUrl = document.getElementById('apiBaseUrl').value;
+            const statusDiv = document.getElementById('connectionStatus');
+            
+            try {
+                const response = await fetch(`${baseUrl}/health`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusDiv.innerHTML = '<span style="color: green;">✓ Connected</span>';
+                } else {
+                    statusDiv.innerHTML = '<span style="color: red;">✗ Connection failed</span>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<span style="color: red;">✗ Connection failed</span>';
+                console.error('Connection test failed:', error);
+            }
+        }
+         async function loadVerificationData() {
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/admin/restaurants/all-with-status`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentVerificationData = data.data.restaurants;
+                    displayVerificationData(currentVerificationData);
+                    updateVerificationStats(currentVerificationData);
+                } else {
+                    showAlert('Failed to load verification data', 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading verification data: ' + error.message, 'error');
+            }
+        }
+
+        // Display verification data in table
+        function displayVerificationData(restaurants) {
+            const tbody = document.getElementById('verificationTableBody');
+            tbody.innerHTML = '';
+            
+            restaurants.forEach(restaurant => {
+                const row = document.createElement('tr');
+                const submissionDate = restaurant.submission_date ? 
+                    new Date(restaurant.submission_date).toLocaleDateString() : 'Not submitted';
+                const verificationDate = restaurant.verification_date ? 
+                    new Date(restaurant.verification_date).toLocaleDateString() : '-';
+                
+                let statusBadge = '';
+                let actionButtons = '';
+                
+                switch(restaurant.verification_status) {
+                    case 'pending':
+                        statusBadge = '<span class="status-badge status-warning">Pending</span>';
+                        actionButtons = `
+                            <button class="btn btn-sm btn-success" onclick="showVerificationModal('${restaurant.uid}', 'verify')">Verify</button>
+                            <button class="btn btn-sm btn-danger" onclick="showVerificationModal('${restaurant.uid}', 'reject')">Reject</button>
+                        `;
+                        break;
+                    case 'verified':
+                        statusBadge = '<span class="status-badge status-online">Verified</span>';
+                        actionButtons = `
+                            <button class="btn btn-sm btn-danger" onclick="showVerificationModal('${restaurant.uid}', 'reject')">Revoke</button>
+                        `;
+                        break;
+                    case 'rejected':
+                        statusBadge = '<span class="status-badge status-offline">Rejected</span>';
+                        actionButtons = `
+                            <button class="btn btn-sm btn-success" onclick="showVerificationModal('${restaurant.uid}', 'verify')">Verify</button>
+                        `;
+                        break;
+                    default:
+                        statusBadge = '<span class="status-badge">Not Submitted</span>';
+                        actionButtons = '<span class="text-muted">No documents submitted</span>';
+                }
+                
+                row.innerHTML = `
+                    <td>${restaurant.restaurant_name}</td>
+                    <td>${restaurant.location}</td>
+                    <td>${restaurant.email}</td>
+                    <td><span class="status-badge ${restaurant.documents_submitted ? 'status-online' : 'status-offline'}">${restaurant.documents_submitted ? 'Yes' : 'No'}</span></td>
+                    <td>${statusBadge}</td>
+                    <td>${submissionDate}</td>
+                    <td>${verificationDate}</td>
+                    <td>${restaurant.verification_notes || '-'}</td>
+                    <td class="action-buttons">${actionButtons}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update verification statistics
+        function updateVerificationStats(restaurants) {
+            const pending = restaurants.filter(r => r.verification_status === 'pending').length;
+            const verified = restaurants.filter(r => r.verification_status === 'verified').length;
+            const rejected = restaurants.filter(r => r.verification_status === 'rejected').length;
+            const notSubmitted = restaurants.filter(r => !r.documents_submitted).length;
+            
+            document.getElementById('pendingVerifications').textContent = pending;
+            document.getElementById('verifiedRestaurants').textContent = verified;
+            document.getElementById('rejectedRestaurants').textContent = rejected;
+            document.getElementById('documentsNotSubmitted').textContent = notSubmitted;
+        }
+
+        // Filter verification data
+        function filterVerification() {
+            const search = document.getElementById('verificationSearch').value.toLowerCase();
+            const status = document.getElementById('verificationStatusFilter').value;
+            
+            let filtered = currentVerificationData.filter(restaurant => {
+                const matchesSearch = restaurant.restaurant_name.toLowerCase().includes(search) || 
+                                    restaurant.location.toLowerCase().includes(search) ||
+                                    restaurant.email.toLowerCase().includes(search);
+                
+                let matchesStatus = true;
+                if (status === 'not_submitted') {
+                    matchesStatus = !restaurant.documents_submitted;
+                } else if (status !== '') {
+                    matchesStatus = restaurant.verification_status === status;
+                }
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            displayVerificationData(filtered);
+        }
+
+        // Show verification modal
+        function showVerificationModal(uid, action) {
+            const restaurant = currentVerificationData.find(r => r.uid === uid);
+            if (!restaurant) return;
+            
+            currentVerificationRestaurant = uid;
+            
+            const modal = document.getElementById('verificationActionModal');
+            const title = document.getElementById('verificationActionTitle');
+            const info = document.getElementById('verificationRestaurantInfo');
+            const decision = document.getElementById('verificationDecision');
+            
+            title.textContent = action === 'verify' ? 'Verify Restaurant' : 'Reject Restaurant';
+            
+            info.innerHTML = `
+                <div class="restaurant-details">
+                    <h4>${restaurant.restaurant_name}</h4>
+                    <p><strong>Location:</strong> ${restaurant.location}</p>
+                    <p><strong>Email:</strong> ${restaurant.email}</p>
+                    <p><strong>Current Status:</strong> ${restaurant.verification_status || 'Not submitted'}</p>
+                    <p><strong>Documents Submitted:</strong> ${restaurant.documents_submitted ? 'Yes' : 'No'}</p>
+                    ${restaurant.submission_date ? `<p><strong>Submission Date:</strong> ${new Date(restaurant.submission_date).toLocaleDateString()}</p>` : ''}
+                </div>
+            `;
+            
+            // Pre-select the action
+            decision.value = action === 'verify' ? 'verified' : 'rejected';
+            document.getElementById('verificationNotes').value = '';
+            
+            modal.style.display = 'block';
+        }
+
+        // Handle verification action
+        async function handleVerificationAction(e) {
+            e.preventDefault();
+            
+            const decision = document.getElementById('verificationDecision').value;
+            const notes = document.getElementById('verificationNotes').value;
+            
+            if (!decision) {
+                showAlert('Please select a verification decision', 'error');
+                return;
+            }
+            
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/admin/restaurants/${currentVerificationRestaurant}/verification`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        verification_status: decision,
+                        verification_notes: notes
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showAlert(`Restaurant ${decision} successfully`, 'success');
+                    closeModal('verificationActionModal');
+                    loadVerificationData();
+                } else {
+                    showAlert('Failed to update verification status', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating verification: ' + error.message, 'error');
+            }
+        }
+
+        // Refresh verification data
+        function refreshVerification() {
+            loadVerificationData();
+            showAlert('Verification data refreshed', 'success');
+        }
+
+        // Load dashboard data - FIXED VERSION
+async function loadDashboardData() {
+    try {
+        const baseUrl = document.getElementById('apiBaseUrl').value;
+        
+        // Load restaurants first
+        await loadRestaurants();
+        
+        // Load orders for all restaurants
+        await loadOrders();
+        
+        // Generate dashboard content
+        generateDashboardContent();
+        
+        // Update statistics
+        await updateStats();
+        
+    } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+        document.getElementById('dashboardContent').innerHTML = `
+            <div class="alert alert-error">
+                Failed to load dashboard data: ${error.message}
+            </div>
+        `;
+    }
+}
+
+// Generate dashboard content - NEW FUNCTION
+function generateDashboardContent() {
+    const dashboardContent = document.getElementById('dashboardContent');
+    
+    // Recent orders
+    const recentOrders = currentOrders.slice(0, 5);
+    let recentOrdersHtml = '';
+    
+    if (recentOrders.length > 0) {
+        recentOrdersHtml = recentOrders.map(order => `
+            <tr>
+                <td>#${order.id}</td>
+                <td>${order.customer_name}</td>
+                <td>${order.restaurant_name || 'Unknown'}</td>
+                <td>₹${parseFloat(order.total_price).toFixed(2)}</td>
+                <td><span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></td>
+                <td>${new Date(order.created_at).toLocaleDateString()}</td>
+            </tr>
+        `).join('');
+    } else {
+        recentOrdersHtml = '<tr><td colspan="6">No recent orders found</td></tr>';
+    }
+    
+    // Active restaurants
+    const activeRestaurants = currentRestaurants.filter(r => r.is_online).length;
+    const totalRestaurants = currentRestaurants.length;
+    
+    // Order status breakdown
+    const statusCounts = {};
+    currentOrders.forEach(order => {
+        statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
+    });
+    
+    let statusBreakdownHtml = Object.entries(statusCounts).map(([status, count]) => `
+        <div class="stat-card" style="margin-bottom: 10px;">
+            <h3>${count}</h3>
+            <p>${status.toUpperCase()} Orders</p>
+        </div>
+    `).join('');
+    
+    if (!statusBreakdownHtml) {
+        statusBreakdownHtml = '<div class="stat-card"><h3>0</h3><p>No Orders</p></div>';
+    }
+
+    // Calculate today's stats
+    const today = new Date().toDateString();
+    const completedToday = currentOrders.filter(o => o.status === 'delivered' && new Date(o.created_at).toDateString() === today).length;
+    const revenueToday = currentOrders.filter(o => new Date(o.created_at).toDateString() === today)
+        .reduce((sum, order) => sum + parseFloat(order.total_price || 0), 0).toFixed(2);
+    
+    dashboardContent.innerHTML = `
+        <div class="stats-grid" style="margin-bottom: 30px;">
+            <div class="stat-card">
+                <h3>${activeRestaurants}/${totalRestaurants}</h3>
+                <p>Active Restaurants</p>
+            </div>
+            <div class="stat-card">
+                <h3>${currentOrders.filter(o => ['pending', 'preparing', 'ready'].includes(o.status)).length}</h3>
+                <p>Orders In Progress</p>
+            </div>
+            <div class="stat-card">
+                <h3>${completedToday}</h3>
+                <p>Completed Today</p>
+            </div>
+            <div class="stat-card">
+                <h3>₹${revenueToday}</h3>
+                <p>Today's Revenue</p>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 30px;">
+            <div>
+                <h3 style="margin-bottom: 15px;">Recent Orders</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Restaurant</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>${recentOrdersHtml}</tbody>
+                </table>
+            </div>
+            
+            <div>
+                <h3 style="margin-bottom: 15px;">Order Status Breakdown</h3>
+                ${statusBreakdownHtml}
+            </div>
+        </div>
+    `;
+}
+
+        // Update statistics
+        async function updateStats() {
+            try {                
+                // Calculate revenue and order stats from current orders
+                let totalRevenue = 0;
+                let activeOrdersCount = 0;
+                
+                if (currentOrders.length > 0) {
+                    currentOrders.forEach(order => {
+                        totalRevenue += parseFloat(order.total_price || 0);
+                        if (['pending', 'preparing', 'ready', 'on_the_way'].includes(order.status)) {
+                            activeOrdersCount++;
+                        }
+                    });
+                }
+                
+                document.getElementById('totalRestaurants').textContent = currentRestaurants.length;
+                document.getElementById('totalOrders').textContent = currentOrders.length;
+                document.getElementById('activeOrders').textContent = activeOrdersCount;
+                document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toFixed(2)}`;
+                
+            } catch (error) {
+                console.error('Failed to update stats:', error);
+            }
+        }
+
+        // Refresh dashboard
+        function refreshDashboard() {
+            loadDashboardData();
+            showAlert('Dashboard refreshed successfully', 'success');
+        }
+
+        // Load restaurants
+        async function loadRestaurants() {
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/restaurants`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentRestaurants = data.data.restaurants;
+                    displayRestaurants(currentRestaurants);
+                    populateRestaurantDropdowns();
+                } else {
+                    showAlert('Failed to load restaurants', 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading restaurants: ' + error.message, 'error');
+            }
+        }
+
+        // Display restaurants in table
+        function displayRestaurants(restaurants) {
+            const tbody = document.getElementById('restaurantsTableBody');
+            tbody.innerHTML = '';
+            
+            restaurants.forEach(restaurant => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${restaurant.id}</td>
+                    <td>${restaurant.name}</td>
+                    <td>${restaurant.location}</td>
+                    <td>${restaurant.email}</td>
+                    <td><span class="status-badge ${restaurant.is_pure_veg ? 'status-online' : 'status-offline'}">${restaurant.is_pure_veg ? 'Pure Veg' : 'Non-Veg'}</span></td>
+                    <td><span class="status-badge ${restaurant.is_online ? 'status-online' : 'status-offline'}">${restaurant.is_online ? 'Online' : 'Offline'}</span></td>
+                    <td>${new Date(restaurant.created_at).toLocaleDateString()}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm" onclick="editRestaurant('${restaurant.id}')">Edit</button>
+                        <button class="btn btn-sm ${restaurant.is_online ? 'btn-warning' : 'btn-success'}" onclick="toggleRestaurantStatus('${restaurant.id}', ${!restaurant.is_online})">${restaurant.is_online ? 'Set Offline' : 'Set Online'}</button>
+                        <button class="btn btn-sm" onclick="viewRestaurantMenu('${restaurant.id}')">Menu</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filter restaurants
+        function filterRestaurants() {
+            const search = document.getElementById('restaurantSearch').value.toLowerCase();
+            const status = document.getElementById('restaurantStatusFilter').value;
+            
+            let filtered = currentRestaurants.filter(restaurant => {
+                const matchesSearch = restaurant.name.toLowerCase().includes(search) || 
+                                    restaurant.location.toLowerCase().includes(search) ||
+                                    restaurant.email.toLowerCase().includes(search);
+                const matchesStatus = status === '' || restaurant.is_online.toString() === status;
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            displayRestaurants(filtered);
+        }
+
+        // Toggle restaurant online/offline status
+        async function toggleRestaurantStatus(uid, isOnline) {
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/restaurants/${uid}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_online: isOnline })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showAlert(`Restaurant status updated to ${isOnline ? 'Online' : 'Offline'}`, 'success');
+                    loadRestaurants();
+                } else {
+                    showAlert('Failed to update restaurant status', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating restaurant status: ' + error.message, 'error');
+            }
+        }
+         async function displayCustomers(customers) {
+    const tbody = document.getElementById('customersTableBody');
+    tbody.innerHTML = '';
+    
+    for (const customer of customers) {
+        let totalOrders = 0;
+        try {
+            const baseUrl = document.getElementById('apiBaseUrl').value;
+            const response = await fetch(`${baseUrl}/api/customers/${customer.uid}/orders`);
+            const data = await response.json();
+            if (data.success && data.data.orders) {
+                totalOrders = data.data.orders.length;
+            }
+        } catch (error) {
+            console.warn(`Failed to load orders for customer ${customer.uid}:`, error);
+            totalOrders = 'N/A'; // Fallback if orders can't be fetched
+        }
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${customer.uid || 'N/A'}</td>
+            <td>${customer.name || 'N/A'}</td>
+            <td>${customer.email || 'N/A'}</td>
+            <td>${customer.phone || 'N/A'}</td>
+            <td>${Array.isArray(customer.address) && customer.address.length > 0 ? customer.address.join(', ') : 'N/A'}</td>
+            <td>${totalOrders}</td>
+            <td>${customer.created_at ? new Date(customer.created_at).toLocaleDateString() : 'N/A'}</td>
+            <td class="action-buttons">
+                <button class="btn btn-sm" onclick="viewCustomerDetails('${customer.uid}')">Details</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    }
+}
+
+        // View customer details
+        async function viewCustomerDetails(uid) {
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/customers/${uid}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const customer = data.data.customer;
+                    const ordersResponse = await fetch(`${baseUrl}/api/customers/${uid}/orders`);
+                    const ordersData = await ordersResponse.json();
+                    
+                    let ordersHtml = '';
+                    if (ordersData.success && ordersData.data.orders.length > 0) {
+                        ordersHtml = ordersData.data.orders.map(order => `
+                            <tr>
+                                <td>#${order.id}</td>
+                                <td>${order.restaurant_name || 'Unknown'}</td>
+                                <td>₹${parseFloat(order.total_price).toFixed(2)}</td>
+                                <td><span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></td>
+                                <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        ordersHtml = '<tr><td colspan="5">No orders found</td></tr>';
+                    }
+                    
+                    document.getElementById('orderDetailsContent').innerHTML = `
+                        <div class="form-grid">
+                            <div><strong>UID:</strong> ${customer.uid}</div>
+                            <div><strong>Name:</strong> ${customer.name || 'N/A'}</div>
+                            <div><strong>Email:</strong> ${customer.email || 'N/A'}</div>
+                            <div><strong>Phone:</strong> ${customer.phone || 'N/A'}</div>
+                            <div><strong>Address:</strong> ${Array.isArray(customer.address) && customer.address.length > 0 ? customer.address.join(', ') : 'N/A'}</div>
+                            <div><strong>Registered:</strong> ${new Date(customer.created_at).toLocaleString()}</div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h3>Order History</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr><th>Order ID</th><th>Restaurant</th><th>Amount</th><th>Status</th><th>Date</th></tr>
+                                </thead>
+                                <tbody>${ordersHtml}</tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    document.getElementById('orderDetailsModal').style.display = 'block';
+                    document.querySelector('#orderDetailsModal h2').textContent = 'Customer Details';
+                } else {
+                    showAlert('Failed to load customer details', 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading customer details: ' + error.message, 'error');
+            }
+        }
+
+        // Filter customers
+        function filterCustomers() {
+            const search = document.getElementById('customerSearch').value.toLowerCase();
+            
+            let filtered = currentCustomers.filter(customer => {
+                const matchesSearch = (customer.name && customer.name.toLowerCase().includes(search)) || 
+                                    (customer.email && customer.email.toLowerCase().includes(search)) ||
+                                    (customer.phone && customer.phone.includes(search)) ||
+                                    customer.uid.toLowerCase().includes(search);
+                
+                return matchesSearch;
+            });
+            
+            displayCustomers(filtered);
+        }
+
+        // Refresh customers
+        function refreshCustomers() {
+            loadCustomers();
+            showAlert('Customers refreshed', 'success');
+        }
+
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                currentOrders = [];
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                
+                // Get all restaurants first, then fetch orders for each
+                for (const restaurant of currentRestaurants) {
+                    try {
+                        const response = await fetch(`${baseUrl}/api/restaurants/${restaurant.id}/orders`);
+                        const data = await response.json();
+                        if (data.success && data.data.orders) {
+                            currentOrders.push(...data.data.orders.map(order => ({
+                                ...order,
+                                restaurant_name: restaurant.name
+                            })));
+                        }
+                    } catch (error) {
+                        console.error(`Failed to load orders for restaurant ${restaurant.id}:`, error);
+                    }
+                }
+                
+                displayOrders(currentOrders);
+                updateStats();
+            } catch (error) {
+                showAlert('Error loading orders: ' + error.message, 'error');
+            }
+        }
+
+        // Display orders in table
+        function displayOrders(orders) {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = '';
+            
+            orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.customer_name}<br><small>${order.phone_number}</small></td>
+                    <td>${order.restaurant_name || 'Unknown'}</td>
+                    <td>₹${parseFloat(order.total_price).toFixed(2)}</td>
+                    <td><span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></td>
+                    <td><span class="status-badge payment-${order.payment_status || 'pending'}">${(order.payment_status || 'pending').toUpperCase()}</span></td>
+                    <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm" onclick="viewOrderDetails(${order.id})">Details</button>
+                        <select class="btn btn-sm" onchange="updateOrderStatus(${order.id}, this.value)">
+                            <option value="">Update Status</option>
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Ready</option>
+                            <option value="on_the_way" ${order.status === 'on_the_way' ? 'selected' : ''}>On The Way</option>
+                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filter orders
+        function filterOrders() {
+            const search = document.getElementById('orderSearch').value.toLowerCase();
+            const status = document.getElementById('orderStatusFilter').value;
+            const paymentStatus = document.getElementById('paymentStatusFilter').value;
+            
+            let filtered = currentOrders.filter(order => {
+                const matchesSearch = order.customer_name.toLowerCase().includes(search) || 
+                                    order.phone_number.includes(search) ||
+                                    order.id.toString().includes(search);
+                const matchesStatus = status === '' || order.status === status;
+                const matchesPayment = paymentStatus === '' || order.payment_status === paymentStatus;
+                
+                return matchesSearch && matchesStatus && matchesPayment;
+            });
+            
+            displayOrders(filtered);
+        }
+
+        // Update order status
+        async function updateOrderStatus(orderId, newStatus) {
+            if (!newStatus) return;
+            
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('Order status updated successfully', 'success');
+                    loadOrders();
+                } else {
+                    showAlert('Failed to update order status', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating order status: ' + error.message, 'error');
+            }
+        }
+
+        // View order details
+        async function viewOrderDetails(orderId) {
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/orders/${orderId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const order = data.data.order;
+                    const items = data.data.items;
+                    
+                    let itemsHtml = items.map(item => 
+                        `<tr>
+                            <td>${item.item_name}</td>
+                            <td>${item.quantity}</td>
+                            <td>₹${parseFloat(item.unit_price).toFixed(2)}</td>
+                            <td>₹${(item.quantity * parseFloat(item.unit_price)).toFixed(2)}</td>
+                        </tr>`
+                    ).join('');
+                    
+                    document.getElementById('orderDetailsContent').innerHTML = `
+                        <div class="form-grid">
+                            <div><strong>Order ID:</strong> #${order.id}</div>
+                            <div><strong>Customer:</strong> ${order.customer_name}</div>
+                            <div><strong>Phone:</strong> ${order.phone_number}</div>
+                            <div><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span></div>
+                            <div><strong>Payment Status:</strong> <span class="status-badge payment-${order.payment_status || 'pending'}">${(order.payment_status || 'pending').toUpperCase()}</span></div>
+                            <div><strong>Payment Method:</strong> ${order.payment_method}</div>
+                            <div><strong>Total:</strong> ₹${parseFloat(order.total_price).toFixed(2)}</div>
+                            <div><strong>Created:</strong> ${new Date(order.created_at).toLocaleString()}</div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <strong>Delivery Address:</strong>
+                            <p>${order.delivery_address}</p>
+                        </div>
+                        ${order.notes ? `<div style="margin-top: 15px;"><strong>Notes:</strong><p>${order.notes}</p></div>` : ''}
+                        <div style="margin-top: 20px;">
+                            <h3>Order Items</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+                                </thead>
+                                <tbody>${itemsHtml}</tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    document.getElementById('orderDetailsModal').style.display = 'block';
+                } else {
+                    showAlert('Failed to load order details', 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading order details: ' + error.message, 'error');
+            }
+        }
+
+        // Load customers (simplified - would need customer endpoint implementation)
+        async function loadCustomers() {
+    try {
+        const baseUrl = document.getElementById('apiBaseUrl').value;
+        const response = await fetch(`${baseUrl}/api/customers`);
+        const data = await response.json();
+        
+        if (data.success) {
+            currentCustomers = data.data.customers;
+            displayCustomers(currentCustomers);
+            updateStats();
+        } else {
+            showAlert('Failed to load customers', 'error');
+            document.getElementById('customersTableBody').innerHTML = '<tr><td colspan="8">Failed to load customers</td></tr>';
+        }
+    } catch (error) {
+        showAlert('Error loading customers: ' + error.message, 'error');
+        document.getElementById('customersTableBody').innerHTML = '<tr><td colspan="8">Error loading customers</td></tr>';
+    }
+}
+        // Load menu items
+        async function loadMenuItems() {
+            const restaurantUid = document.getElementById('menuRestaurantFilter').value;
+            if (!restaurantUid) {
+                document.getElementById('menuTableBody').innerHTML = '<tr><td colspan="7">Please select a restaurant</td></tr>';
+                return;
+            }
+            
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/menu?restaurant_uid=${restaurantUid}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayMenuItems(data.data.items);
+                } else {
+                    showAlert('Failed to load menu items', 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading menu items: ' + error.message, 'error');
+            }
+        }
+
+        // Display menu items
+        function displayMenuItems(items) {
+            const tbody = document.getElementById('menuTableBody');
+            tbody.innerHTML = '';
+            
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.category}</td>
+                    <td>₹${parseFloat(item.price).toFixed(2)}</td>
+                    <td><span class="status-badge ${item.food_type === 0 ? 'status-online' : 'status-offline'}">${item.food_type === 0 ? 'Veg' : 'Non-Veg'}</span></td>
+                    <td><span class="status-badge ${item.is_available ? 'status-online' : 'status-offline'}">${item.is_available ? 'Available' : 'Unavailable'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm ${item.is_available ? 'btn-warning' : 'btn-success'}" onclick="toggleMenuItemAvailability(${item.id}, '${item.restaurant_uid}', ${!item.is_available})">${item.is_available ? 'Disable' : 'Enable'}</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteMenuItem(${item.id}, '${item.restaurant_uid}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Toggle menu item availability
+        async function toggleMenuItemAvailability(itemId, restaurantUid, isAvailable) {
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/menu/${itemId}/availability?restaurant_uid=${restaurantUid}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_available: isAvailable })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('Menu item availability updated', 'success');
+                    loadMenuItems();
+                } else {
+                    showAlert('Failed to update menu item availability', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating menu item: ' + error.message, 'error');
+            }
+        }
+
+        // Delete menu item
+        async function deleteMenuItem(itemId, restaurantUid) {
+            if (!confirm('Are you sure you want to delete this menu item?')) return;
+            
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/menu/${itemId}?restaurant_uid=${restaurantUid}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('Menu item deleted successfully', 'success');
+                    loadMenuItems();
+                } else {
+                    showAlert('Failed to delete menu item', 'error');
+                }
+            } catch (error) {
+                showAlert('Error deleting menu item: ' + error.message, 'error');
+            }
+        }
+
+        // Load categories
+        async function loadCategories() {
+            const restaurantUid = document.getElementById('categoryRestaurantFilter').value;
+            if (!restaurantUid) {
+                document.getElementById('categoriesTableBody').innerHTML = '<tr><td colspan="4">Please select a restaurant</td></tr>';
+                return;
+            }
+            
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/categories?restaurant_uid=${restaurantUid}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCategories(data.categories);
+                } else {
+                    showAlert('Failed to load categories', 'error');
+                }
+            } catch (error) {
+                showAlert('Error loading categories: ' + error.message, 'error');
+            }
+        }
+
+        // Display categories
+        function displayCategories(categories) {
+            const tbody = document.getElementById('categoriesTableBody');
+            tbody.innerHTML = '';
+            
+            categories.forEach(category => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${category.id}</td>
+                    <td>${category.name}</td>
+                    <td>${category.restaurant_uid}</td>
+                    <td></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load payments (using orders data with payment info)
+        function loadPayments() {
+            const payments = currentOrders.filter(order => order.payment_id || order.payment_status);
+            displayPayments(payments);
+        }
+
+        // Display payments
+        function displayPayments(payments) {
+            const tbody = document.getElementById('paymentsTableBody');
+            tbody.innerHTML = '';
+            
+            payments.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${order.id}</td>
+                    <td>${order.payment_id || 'N/A'}</td>
+                    <td>${order.customer_name}</td>
+                    <td>₹${parseFloat(order.total_price).toFixed(2)}</td>
+                    <td><span class="status-badge payment-${order.payment_status || 'pending'}">${(order.payment_status || 'pending').toUpperCase()}</span></td>
+                    <td>${order.payment_method}</td>
+                    <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm" onclick="verifyPayment(${order.id})">Verify</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Verify payment
+        async function verifyPayment(orderId) {
+            try {
+                const baseUrl = document.getElementById('apiBaseUrl').value;
+                const response = await fetch(`${baseUrl}/api/orders/${orderId}/verify-payment`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('Payment verification completed', 'success');
+                    loadOrders();
+                    loadPayments();
+                } else {
+                    showAlert('Payment verification failed', 'error');
+                }
+            } catch (error) {
+                showAlert('Error verifying payment: ' + error.message, 'error');
+            }
+        }
+
+        // Refresh functions
+        function refreshOrders() {
+            loadOrders();
+            showAlert('Orders refreshed', 'success');
+        }
+
+        function refreshPayments() {
+            loadPayments();
+            showAlert('Payments refreshed', 'success');
+        }
+
+        // Modal functions
+        function showAddRestaurantModal() {
+            document.getElementById('addRestaurantModal').style.display = 'block';
+        }
+
+        function showAddMenuItemModal() {
+            populateRestaurantDropdowns();
+            document.getElementById('addMenuItemModal').style.display = 'block';
+        }
+
+        function showAddCategoryModal() {
+            populateRestaurantDropdowns();
+            document.getElementById('addCategoryModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Edit restaurant
+        function editRestaurant(uid) {
+            const restaurant = currentRestaurants.find(r => r.id === uid);
+            if (!restaurant) return;
+            
+            currentEditingRestaurant = uid;
+            document.getElementById('editRestaurantName').value = restaurant.name;
+            document.getElementById('editRestaurantLocation').value = restaurant.location;
+            document.getElementById('editRestaurantEmail').value = restaurant.email;
+            document.getElementById('editRestaurantPureVeg').checked = restaurant.is_pure_veg;
+            
+            document.getElementById('editRestaurantModal').style.display = 'block';
+        }
+
+        // View restaurant menu
+        function viewRestaurantMenu(uid) {
+            document.getElementById('menuRestaurantFilter').value = uid;
+            showTab('menu');
+            loadMenuItems();
+        }
+
+        // Populate restaurant dropdowns
+        function populateRestaurantDropdowns() {
+            const selects = [
+                'menuRestaurantFilter',
+                'categoryRestaurantFilter', 
+                'newMenuRestaurant',
+                'newCategoryRestaurant'
+            ];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                
+                // Keep the first option (usually "Select Restaurant")
+                const firstOption = select.options[0];
+                select.innerHTML = '';
+                if (firstOption) select.appendChild(firstOption);
+                
+                currentRestaurants.forEach(restaurant => {
+                    const option = document.createElement('option');
+                    option.value = restaurant.id;
+                    option.textContent = restaurant.name;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // Setup form handlers
+        function setupFormHandlers() {
+            // Add restaurant form
+            document.getElementById('addRestaurantForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = {
+                    uid: document.getElementById('newRestaurantUid').value,
+                    restaurant_name: document.getElementById('newRestaurantName').value,
+                    location: document.getElementById('newRestaurantLocation').value,
+                    email: document.getElementById('newRestaurantEmail').value,
+                    is_pure_veg: document.getElementById('newRestaurantPureVeg').checked
+                };
+                
+                try {
+                    const baseUrl = document.getElementById('apiBaseUrl').value;
+                    const response = await fetch(`${baseUrl}/api/restaurants`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        showAlert('Restaurant added successfully', 'success');
+                        closeModal('addRestaurantModal');
+                        document.getElementById('addRestaurantForm').reset();
+                        loadRestaurants();
+                    } else {
+                        showAlert('Failed to add restaurant: ' + data.error, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error adding restaurant: ' + error.message, 'error');
+                }
+            });
+
+            // Edit restaurant form
+            document.getElementById('editRestaurantForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = {
+                    restaurant_name: document.getElementById('editRestaurantName').value,
+                    location: document.getElementById('editRestaurantLocation').value,
+                    email: document.getElementById('editRestaurantEmail').value,
+                    is_pure_veg: document.getElementById('editRestaurantPureVeg').checked
+                };
+                
+                try {
+                    const baseUrl = document.getElementById('apiBaseUrl').value;
+                    const response = await fetch(`${baseUrl}/api/restaurants/${currentEditingRestaurant}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        showAlert('Restaurant updated successfully', 'success');
+                        closeModal('editRestaurantModal');
+                        loadRestaurants();
+                    } else {
+                        showAlert('Failed to update restaurant: ' + data.error, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error updating restaurant: ' + error.message, 'error');
+                }
+            });
+
+            // Add menu item form
+            document.getElementById('addMenuItemForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = {
+                    name: document.getElementById('newMenuName').value,
+                    description: document.getElementById('newMenuDescription').value,
+                    price: parseFloat(document.getElementById('newMenuPrice').value),
+                    category: document.getElementById('newMenuCategory').value,
+                    restaurant_uid: document.getElementById('newMenuRestaurant').value,
+                    is_available: document.getElementById('newMenuAvailable').checked,
+                    image_url: document.getElementById('newMenuImageUrl').value,
+                    food_type: parseInt(document.getElementById('newMenuFoodType').value)
+                };
+                
+                try {
+                    const baseUrl = document.getElementById('apiBaseUrl').value;
+                    const response = await fetch(`${baseUrl}/api/menu`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        showAlert('Menu item added successfully', 'success');
+                        closeModal('addMenuItemModal');
+                        document.getElementById('addMenuItemForm').reset();
+                        loadMenuItems();
+                    } else {
+                        showAlert('Failed to add menu item: ' + data.error, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error adding menu item: ' + error.message, 'error');
+                }
+            });
+
+            // Add category form
+            document.getElementById('addCategoryForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = {
+                    name: document.getElementById('newCategoryName').value,
+                    restaurant_uid: document.getElementById('newCategoryRestaurant').value
+                };
+                
+                try {
+                    const baseUrl = document.getElementById('apiBaseUrl').value;
+                    const response = await fetch(`${baseUrl}/api/categories`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        showAlert('Category added successfully', 'success');
+                        closeModal('addCategoryModal');
+                        document.getElementById('addCategoryForm').reset();
+                        loadCategories();
+                    } else {
+                        showAlert('Failed to add category: ' + data.error, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error adding category: ' + error.message, 'error');
+                }
+            });
+
+            // Load categories when restaurant is selected for menu item
+            document.getElementById('newMenuRestaurant').addEventListener('change', async (e) => {
+                const restaurantUid = e.target.value;
+                const categorySelect = document.getElementById('newMenuCategory');
+                
+                categorySelect.innerHTML = '<option value="">Select Category</option>';
+                
+                if (!restaurantUid) return;
+                
+                try {
+                    const baseUrl = document.getElementById('apiBaseUrl').value;
+                    const response = await fetch(`${baseUrl}/api/categories?restaurant_uid=${restaurantUid}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        data.categories.forEach(category => {
+                            const option = document.createElement('option');
+                            option.value = category.name;
+                            option.textContent = category.name;
+                            categorySelect.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Failed to load categories:', error);
+                }
+            });
+
+            // Verification form handler
+            document.getElementById('verificationActionForm').addEventListener('submit', handleVerificationAction);
+        }
+
+        // Show alert messages
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className            = `alert alert-${type}`;
+            alertDiv.innerHTML = message;
+            document.querySelector('.admin-container').prepend(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        };
+
+        // Keyboard shortcuts for better UX
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+        });
+
+        // Initialize periodic data refresh
+        function startAutoRefresh() {
+            setInterval(() => {
+                if (document.querySelector('.tab.active').getAttribute('onclick').includes('dashboard')) {
+                    loadDashboardData();
+                }
+            }, 60000); // Refresh every 60 seconds
+        }
+
+        // Start auto-refresh when page loads
+        startAutoRefresh();
+    </script>
+</body>
+</html>
