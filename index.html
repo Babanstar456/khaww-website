@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urbanix — Coming Soon</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Bebas+Neue&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --black: #0a0a0a;
+            --white: #f5f5f5;
+            --gray-light: #e0e0e0;
+            --gray-mid: #888;
+            --gray-dark: #1c1c1c;
+            --accent: #ffffff;
+            --max-width: 1200px;
+        }
+        html, body {
+            height: 100%;
+            background: var(--black);
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ─────────────────────────────────────────
+           LOADING SCREEN
+        ───────────────────────────────────────── */
+        #urbanix-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #urbanix-loader.fade-out {
+            animation: loaderFadeOut 0.8s ease forwards;
+        }
+        @keyframes loaderFadeOut {
+            to { opacity: 0; pointer-events: none; }
+        }
+
+        .ul-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 48px 48px;
+            animation: gridPulse 3s ease-in-out infinite;
+        }
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .ul-scanline {
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            animation: scanline 2.2s linear infinite;
+        }
+        @keyframes scanline {
+            from { top: -2px; }
+            to { top: 100%; }
+        }
+
+        .ul-corner {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+        }
+        .ul-corner::before,
+        .ul-corner::after {
+            content: '';
+            position: absolute;
+            background: rgba(255,255,255,0.35);
+        }
+        .ul-corner::before { width: 100%; height: 1px; }
+        .ul-corner::after  { height: 100%; width: 1px; }
+        .ul-corner.tl { top: 24px; left: 24px; }
+        .ul-corner.tr { top: 24px; right: 24px; transform: scaleX(-1); }
+        .ul-corner.bl { bottom: 24px; left: 24px; transform: scaleY(-1); }
+        .ul-corner.br { bottom: 24px; right: 24px; transform: scale(-1); }
+
+        .ul-center {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .ul-logo-ring {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            position: relative;
+            animation: ringRotate 4s linear infinite;
+        }
+        @keyframes ringRotate {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+        .ul-logo-ring::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1.5px solid transparent;
+            border-top-color: rgba(255,255,255,0.85);
+            border-right-color: rgba(255,255,255,0.2);
+            animation: ringRotate 1.4s linear infinite;
+        }
+        .ul-logo-inner {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: ringRotate 4s linear infinite reverse;
+        }
+        .ul-u-letter {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            color: #f5f5f5;
+            letter-spacing: 0.05em;
+            line-height: 1;
+        }
+
+        .ul-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(36px, 10vw, 64px);
+            letter-spacing: 0.3em;
+            color: #f5f5f5;
+            line-height: 1;
+            margin-bottom: 6px;
+            animation: glitch 5s ease-in-out infinite;
+        }
+        @keyframes glitch {
+            0%, 94%, 100% { text-shadow: none; transform: none; }
+            95%  { text-shadow: 3px 0 rgba(255,255,255,0.25), -2px 0 rgba(255,255,255,0.12); transform: skewX(-1.5deg); }
+            96%  { text-shadow: -3px 0 rgba(255,255,255,0.2); transform: skewX(0.8deg); }
+            97%  { text-shadow: 2px 0 rgba(255,255,255,0.15); transform: skewX(0); }
+            98%  { text-shadow: none; }
+        }
+
+        .ul-tagline {
+            font-size: clamp(9px, 2.5vw, 11px);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .ul-status-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .ul-status-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            animation: dotBlink 0.9s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .ul-status-dot:nth-child(2) { animation-delay: 0.15s; }
+        .ul-status-dot:nth-child(3) { animation-delay: 0.30s; }
+        @keyframes dotBlink {
+            0%, 100% { opacity: 0.2; transform: scale(0.7); }
+            50%       { opacity: 1;   transform: scale(1.15); }
+        }
+        .ul-status-text {
+            font-size: clamp(10px, 2.5vw, 11px);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.32);
+            font-weight: 300;
+            text-align: left;
+            min-width: 170px;
+        }
+
+        .ul-bar-wrap {
+            width: clamp(200px, 55vw, 340px);
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+            margin: 0 auto 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .ul-bar-fill {
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            width: 0%;
+            transition: width 0.25s ease;
+            position: relative;
+        }
+        .ul-bar-glow {
+            position: absolute;
+            top: -3px; right: -6px;
+            width: 12px; height: 7px;
+            background: rgba(255,255,255,0.7);
+            filter: blur(4px);
+            border-radius: 50%;
+        }
+        .ul-percent {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(11px, 3vw, 13px);
+            letter-spacing: 0.15em;
+            color: rgba(255,255,255,0.22);
+            margin-top: 10px;
+        }
+
+        .ul-ticker {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            overflow: hidden;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 10px 0;
+        }
+        .ul-ticker-track {
+            display: flex;
+            white-space: nowrap;
+            animation: tickerScroll 18s linear infinite;
+        }
+        .ul-ticker-track span {
+            font-size: clamp(9px, 2.5vw, 10px);
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.15);
+            padding: 0 20px;
+        }
+        @keyframes tickerScroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+
+        /* ─────────────────────────────────────────
+           NOISE + GRID OVERLAYS
+        ───────────────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─────────────────────────────────────────
+           MAIN PAGE
+        ───────────────────────────────────────── */
+        .page {
+            opacity: 0;
+            transition: opacity 0.6s ease 0.2s;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .page.visible {
+            opacity: 1;
+        }
+
+        /* ── Header ── */
+        .header-outer {
+            width: 100%;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 3rem;
+            max-width: var(--max-width);
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .nav-tag {
+            font-size: 11px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            font-weight: 400;
+        }
+
+        /* ── Logo ── */
+        .logo-lockup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo-mark {
+            width: 64px;
+            height: auto;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .logo-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            letter-spacing: 0.25em;
+            color: var(--white);
+            line-height: 1;
+        }
+        .logo-sub {
+            font-size: 9px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* ── Main hero ── */
+        .main-outer {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+        }
+        .eyebrow::before,
+        .eyebrow::after {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--gray-mid);
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(72px, 14vw, 160px);
+            line-height: 0.9;
+            letter-spacing: 0.05em;
+            color: var(--white);
+            margin-bottom: 2rem;
+        }
+        .hero-title span { display: block; }
+        .hero-title .outline {
+            -webkit-text-stroke: 1px rgba(255,255,255,0.35);
+            color: transparent;
+        }
+
+        .hero-desc {
+            max-width: 420px;
+            width: 100%;
+            font-size: 14px;
+            line-height: 1.9;
+            color: var(--gray-mid);
+            font-weight: 300;
+            letter-spacing: 0.04em;
+            margin-bottom: 3.5rem;
+            text-align: center;
+        }
+
+        /* ── Countdown ── */
+        .countdown-wrapper {
+            display: flex;
+            gap: 0;
+            margin-bottom: 4rem;
+            justify-content: center;
+            width: 100%;
+            max-width: 480px;
+        }
+        .countdown-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+            padding: 0 8px;
+        }
+        .countdown-unit + .countdown-unit {
+            border-left: 1px solid rgba(255,255,255,0.08);
+        }
+        .countdown-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(40px, 8vw, 72px);
+            line-height: 1;
+            color: var(--white);
+            letter-spacing: 0.04em;
+        }
+        .countdown-label {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        /* ── Email form ── */
+        .notify-form {
+            display: flex;
+            gap: 0;
+            border: 1px solid rgba(255,255,255,0.14);
+            overflow: hidden;
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .notify-form input[type="email"] {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 14px 20px;
+            font-size: 13px;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.03em;
+        }
+        .notify-form input[type="email"]::placeholder {
+            color: rgba(255,255,255,0.25);
+        }
+        .notify-form button {
+            background: var(--white);
+            color: var(--black);
+            border: none;
+            padding: 14px 24px;
+            font-size: 11px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .notify-form button:hover { background: var(--gray-light); }
+
+        .success-msg {
+            display: none;
+            font-size: 12px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--gray-mid);
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        /* ── Marquee strip ── */
+        .marquee-strip {
+            overflow: hidden;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 12px 0;
+            margin-top: 4rem;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+        }
+        .marquee-track {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 28s linear infinite;
+        }
+        .marquee-track span {
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.2);
+            font-weight: 400;
+            padding: 0 24px;
+        }
+        .marquee-track span.dot {
+            color: rgba(255,255,255,0.12);
+            font-size: 14px;
+            padding: 0 8px;
+            letter-spacing: 0;
+        }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+
+        /* ── Footer ── */
+        .footer-outer {
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 3rem;
+            max-width: var(--max-width);
+            width: 100%;
+            margin: 0 auto;
+        }
+        .footer-left {
+            font-size: 11px;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 0.1em;
+        }
+        .social-links { display: flex; gap: 24px; }
+        .social-links a {
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            font-weight: 400;
+        }
+        .social-links a:hover { color: var(--white); }
+
+        /* ─────────────────────────────────────────
+           RESPONSIVE
+        ───────────────────────────────────────── */
+        @media (max-width: 768px) {
+            header {
+                padding: 1.5rem 1.5rem;
+            }
+            footer {
+                padding: 1.5rem;
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            main {
+                padding: 3rem 1.5rem;
+            }
+            .notify-form {
+                flex-direction: column;
+            }
+            .notify-form button {
+                width: 100%;
+                text-align: center;
+                padding: 14px;
+            }
+            .ul-corner.tl { top: 16px; left: 16px; }
+            .ul-corner.tr { top: 16px; right: 16px; }
+            .ul-corner.bl { bottom: 16px; left: 16px; }
+            .ul-corner.br { bottom: 16px; right: 16px; }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1.25rem 1rem;
+            }
+            .nav-tag {
+                font-size: 9px;
+                letter-spacing: 0.1em;
+            }
+            main {
+                padding: 2.5rem 1rem;
+            }
+            .hero-desc {
+                font-size: 13px;
+                margin-bottom: 2.5rem;
+            }
+            .countdown-wrapper {
+                margin-bottom: 2.5rem;
+            }
+            .countdown-unit {
+                padding: 0 4px;
+            }
+            .countdown-label {
+                font-size: 9px;
+                letter-spacing: 0.12em;
+            }
+            footer {
+                padding: 1.25rem 1rem;
+            }
+            .eyebrow {
+                font-size: 10px;
+                gap: 8px;
+                margin-bottom: 1.5rem;
+            }
+            .eyebrow::before,
+            .eyebrow::after {
+                width: 20px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .nav-tag {
+                display: none;
+            }
+            header {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING SCREEN -->
+    <div id="urbanix-loader">
+        <div class="ul-grid"></div>
+        <div class="ul-scanline"></div>
+
+        <div class="ul-corner tl"></div>
+        <div class="ul-corner tr"></div>
+        <div class="ul-corner bl"></div>
+        <div class="ul-corner br"></div>
+
+        <div class="ul-center">
+            <div class="ul-logo-ring">
+                <div class="ul-logo-inner">
+                    <span class="ul-u-letter">U</span>
+                </div>
+            </div>
+
+            <div class="ul-brand">URBANIX</div>
+            <div class="ul-tagline">Premium Streetwear</div>
+
+            <div class="ul-status-line">
+                <div class="ul-status-dot"></div>
+                <div class="ul-status-dot"></div>
+                <div class="ul-status-dot"></div>
+                <span class="ul-status-text" id="ul-status-msg">Initializing collection</span>
+            </div>
+
+            <div class="ul-bar-wrap">
+                <div class="ul-bar-fill" id="ul-bar">
+                    <div class="ul-bar-glow"></div>
+                </div>
+            </div>
+            <div class="ul-percent" id="ul-pct">0%</div>
+        </div>
+
+        <div class="ul-ticker">
+            <div class="ul-ticker-track" id="ul-ticker-track"></div>
+        </div>
+    </div>
+
+    <!-- MAIN PAGE -->
+    <div class="page" id="main-page">
+
+        <!-- Header -->
+        <div class="header-outer">
+            <header>
+                <span class="nav-tag">Est. 2026</span>
+                <div class="logo-lockup">
+                    <img class="logo-mark" src="urbanic.png" alt="Urbanix logo mark" onerror="this.style.display='none'" />
+                    <div class="logo-name">Urbanix</div>
+                    <div class="logo-sub">Premium Streetwear</div>
+                </div>
+                <span class="nav-tag">Collection 01</span>
+            </header>
+        </div>
+
+        <!-- Main -->
+        <div class="main-outer">
+            <main>
+                <div class="eyebrow">Something is coming</div>
+                <h1 class="hero-title">
+                    <span>We're</span>
+                    <span class="outline">Almost</span>
+                    <span>Here.</span>
+                </h1>
+                <p class="hero-desc">
+                    Premium streetwear built for those who move differently.
+                    Urbanix Collection 01 drops soon — designed for the streets,
+                    refined for the culture.
+                </p>
+
+                <!-- Countdown Timer -->
+                <div class="countdown-wrapper" id="countdown">
+                    <div class="countdown-unit">
+                        <div class="countdown-number" id="cd-days">00</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="countdown-unit">
+                        <div class="countdown-number" id="cd-hours">00</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-unit">
+                        <div class="countdown-number" id="cd-mins">00</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                    <div class="countdown-unit">
+                        <div class="countdown-number" id="cd-secs">00</div>
+                        <div class="countdown-label">Seconds</div>
+                    </div>
+                </div>
+
+                <!-- Email Capture -->
+                <form class="notify-form" id="notifyForm" onsubmit="handleSubmit(event)">
+                    <input type="email" id="emailInput" placeholder="Enter your email for early access" required />
+                    <button type="submit">Notify Me</button>
+                </form>
+                <div class="success-msg" id="successMsg">&#x2714;&nbsp; You're on the list. We'll be in touch.</div>
+
+                <!-- Scrolling ticker -->
+                <div class="marquee-strip">
+                    <div class="marquee-track" id="ticker"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-outer">
+            <footer>
+                <span class="footer-left">&copy; 2026 Urbanix. All rights reserved.</span>
+                <nav class="social-links">
+                    <a href="https://www.instagram.com/urbanix_shop" target="_blank" rel="noopener">Instagram</a>
+                </nav>
+            </footer>
+        </div>
+
+    </div>
+
+    <script>
+        // Loader ticker
+        const loaderWords = ['Premium Streetwear','·','Collection 01','·','Made for the Streets','·','Urbanix','·','Drop Soon','·','Elevated Culture','·','Black & White','·','Redefine the Block','·'];
+        const loaderTrack = document.getElementById('ul-ticker-track');
+        [...loaderWords, ...loaderWords].forEach(w => {
+            const s = document.createElement('span');
+            s.textContent = w;
+            loaderTrack.appendChild(s);
+        });
+
+        // Progress bar logic
+        const statusMsgs = [
+            'Initializing collection',
+            'Loading textures',
+            'Curating the drop',
+            'Pressing fabric',
+            'Almost ready'
+        ];
+        const bar    = document.getElementById('ul-bar');
+        const pctEl  = document.getElementById('ul-pct');
+        const msgEl  = document.getElementById('ul-status-msg');
+        const loader = document.getElementById('urbanix-loader');
+        const page   = document.getElementById('main-page');
+
+        let progress = 0;
+        const steps = [
+            { target: 18, duration: 500 },
+            { target: 42, duration: 700 },
+            { target: 61, duration: 600 },
+            { target: 83, duration: 800 },
+            { target: 100, duration: 600 }
+        ];
+        let stepIdx = 0;
+
+        function runStep() {
+            if (stepIdx >= steps.length) {
+                setTimeout(() => {
+                    loader.classList.add('fade-out');
+                    page.classList.add('visible');
+                    setTimeout(() => { loader.style.display = 'none'; }, 850);
+                }, 320);
+                return;
+            }
+            const step = steps[stepIdx];
+            msgEl.textContent = statusMsgs[stepIdx] || statusMsgs[statusMsgs.length - 1];
+            const from = progress;
+            const to   = step.target;
+            const dur  = step.duration;
+            const t0   = performance.now();
+
+            function tick(now) {
+                const elapsed = now - t0;
+                const t = Math.min(elapsed / dur, 1);
+                const ease = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
+                progress = Math.round(from + (to - from) * ease);
+                bar.style.width = progress + '%';
+                pctEl.textContent = progress + '%';
+                if (t < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    stepIdx++;
+                    setTimeout(runStep, stepIdx < steps.length ? 120 : 0);
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
+        setTimeout(runStep, 400);
+
+        // Countdown
+        const launchDate = new Date('2026-05-15T00:00:00');
+        function pad(n) { return String(n).padStart(2, '0'); }
+        function updateCountdown() {
+            const diff = launchDate - new Date();
+            if (diff <= 0) {
+                ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => {
+                    document.getElementById(id).textContent = '00';
+                });
+                return;
+            }
+            document.getElementById('cd-days').textContent  = pad(Math.floor(diff / 864e5));
+            document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 864e5) / 36e5));
+            document.getElementById('cd-mins').textContent  = pad(Math.floor((diff % 36e5) / 6e4));
+            document.getElementById('cd-secs').textContent  = pad(Math.floor((diff % 6e4) / 1e3));
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Email submit
+        function handleSubmit(e) {
+            e.preventDefault();
+            document.getElementById('notifyForm').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'block';
+        }
+
+        // Main page marquee
+        const words = [
+            'Premium Streetwear', '·', 'Collection 01', '·',
+            'Made for the Streets', '·', 'Urbanix', '·',
+            'Drop Soon', '·', 'Elevated Culture', '·',
+            'Black & White', '·', 'Redefine the Block', '·'
+        ];
+        const ticker = document.getElementById('ticker');
+        [...words, ...words].map(w => {
+            const s = document.createElement('span');
+            s.textContent = w;
+            if (w === '·') s.classList.add('dot');
+            return s;
+        }).forEach(el => ticker.appendChild(el));
+    </script>
+<!-- KEEP EVERYTHING ABOVE EXACTLY SAME -->
+
+<!-- ── Email form ── -->
+<form id="notifyForm" class="notify-form" onsubmit="handleSubmit(event)">
+    <input 
+        type="email" 
+        id="emailInput"
+        placeholder="Enter your email" 
+        required
+    />
+    <button type="submit">Notify Me</button>
+</form>
+
+<div id="successMsg" class="success-msg">
+    You're on the list.
+</div>
+
+<!-- KEEP EVERYTHING BELOW EXACTLY SAME -->
+
+<!-- ADD THIS JUST BEFORE </body> -->
+<script>
+function handleSubmit(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('emailInput').value;
+
+    fetch("https://script.google.com/macros/s/AKfycbwjLRin9gzzgA7AyMiairYq-DyGe1u-n8Mjfmo6J_B7frXOukZ5JSANey7iMnjk9kSA/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: email })
+    });
+
+    // UI feedback
+    document.getElementById('notifyForm').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+}
+</script>
+</body>
+</html>
