@@ -156,7 +156,6 @@
 
   .notify-note    { font-size: 0.72rem; color: rgba(255,255,255,0.2); margin-top: 0.8rem; letter-spacing: 0.05em; }
   .success-msg    { display: none; font-size: 0.85rem; color: var(--teal); font-weight: 500; letter-spacing: 0.05em; margin-top: 0.5rem; }
-  .duplicate-msg  { display: none; font-size: 0.85rem; color: rgba(255,200,80,0.85); font-weight: 500; letter-spacing: 0.05em; margin-top: 0.5rem; }
   .error-msg      { display: none; font-size: 0.85rem; color: rgba(255,100,100,0.85); font-weight: 500; letter-spacing: 0.05em; margin-top: 0.5rem; }
 
   /* ─── FEATURES ─── */
@@ -260,9 +259,8 @@
       <button id="notify-btn" onclick="handleNotify()">Notify Me</button>
     </div>
     <div class="notify-note" id="notify-note">No spam. Just a heads-up when we go live.</div>
-    <div class="success-msg"   id="msg-success">✓ You're on the list! Check your inbox — see you June 15th.</div>
-    <div class="duplicate-msg" id="msg-duplicate">You're already on the list! We'll see you at launch.</div>
-    <div class="error-msg"     id="msg-error">Something went wrong. Please try again.</div>
+    <div class="success-msg" id="msg-success">✓ You're on the list! Check your inbox — see you June 15th.</div>
+    <div class="error-msg"   id="msg-error">Something went wrong. Please try again.</div>
   </section>
 
   <div class="features">
@@ -289,7 +287,7 @@
 
 <script>
   // ─── REPLACE THIS WITH YOUR DEPLOYED WEB APP URL ───────────────────────────
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrCwTRVwwymUwJt9dYx0RizMC99Ewjxg5FUqakbS2_4i9UTU0XOvYp871nZ4G0x0Fa/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhpHjP3LNmknIsLhG2v_iBaQXUitteRQdZn-XSyn53IFSeZp12HdLnaK0t-6FtMYLe/exec";
   // ───────────────────────────────────────────────────────────────────────────
 
   // ─── LOADER ───
@@ -335,7 +333,6 @@
     const btn        = document.getElementById('notify-btn');
     const email      = emailInput.value.trim();
 
-    // Basic validation
     if (!email || !email.includes('@')) {
       emailInput.style.outline = '1px solid rgba(255,80,80,0.6)';
       emailInput.focus();
@@ -343,26 +340,26 @@
     }
     emailInput.style.outline = '';
 
-    // Loading state
-    btn.disabled       = true;
-    btn.textContent    = 'Sending…';
-
-    hideAllMessages();
+    btn.disabled    = true;
+    btn.textContent = 'Sending…';
+    document.getElementById('msg-error').style.display = 'none';
 
     try {
-      // Google Apps Script doesn't support CORS preflight.
-      // We use no-cors + URLSearchParams (form-encoded) to avoid it.
-      // Because no-cors returns an opaque response we can't read the body,
-      // so we treat any completed fetch as success and let the sheet/email
-      // handle duplicates silently on the server side.
+      // Apps Script doesn't support CORS preflight — use no-cors + URLSearchParams.
+      // Because no-cors returns an opaque response we cannot read the body,
+      // so a completed fetch is treated as success. The server handles duplicates
+      // silently (it just won't re-send emails to already-registered addresses).
       await fetch(APPS_SCRIPT_URL, {
         method:  'POST',
-        mode:    'no-cors',          // avoids preflight entirely
+        mode:    'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body:    new URLSearchParams({ email }),
+        // FIX: send both email and name so the welcome email can address the user.
+        // Name is not collected in this form, so we send the email prefix as a
+        // friendly fallback (Apps Script will use "Foodie" if name is empty).
+        body: new URLSearchParams({ email, name: email.split('@')[0] }),
       });
 
-      // With no-cors we always land here on network success
+      // With no-cors, any completed fetch = network success
       document.getElementById('notify-form').style.display = 'none';
       document.getElementById('notify-note').style.display = 'none';
       document.getElementById('msg-success').style.display = 'block';
@@ -372,12 +369,6 @@
       btn.disabled    = false;
       btn.textContent = 'Notify Me';
     }
-  }
-
-  function hideAllMessages() {
-    ['msg-success', 'msg-duplicate', 'msg-error'].forEach(id => {
-      document.getElementById(id).style.display = 'none';
-    });
   }
 
   // Allow Enter key to submit
