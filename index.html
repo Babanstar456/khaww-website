@@ -289,7 +289,7 @@
 
 <script>
   // ─── REPLACE THIS WITH YOUR DEPLOYED WEB APP URL ───────────────────────────
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWrO2AZaAPe-bMQzvM0-vcYzmeNu_g6GWTsyBZEkVliL20AnueP_9dkpg6m2BkkrSq/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzXGo0QFY2UwLgUbtnONpQBMdkkK7nSbA0IejxzmWSdb_gADU9qOa9janFDrSI2lQ6i/exec";
   // ───────────────────────────────────────────────────────────────────────────
 
   // ─── LOADER ───
@@ -350,27 +350,22 @@
     hideAllMessages();
 
     try {
-      const res  = await fetch(APPS_SCRIPT_URL, {
+      // Google Apps Script doesn't support CORS preflight.
+      // We use no-cors + URLSearchParams (form-encoded) to avoid it.
+      // Because no-cors returns an opaque response we can't read the body,
+      // so we treat any completed fetch as success and let the sheet/email
+      // handle duplicates silently on the server side.
+      await fetch(APPS_SCRIPT_URL, {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email }),
+        mode:    'no-cors',          // avoids preflight entirely
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body:    new URLSearchParams({ email }),
       });
 
-      const data = await res.json();
-
-      if (data.success) {
-        document.getElementById('notify-form').style.display = 'none';
-        document.getElementById('notify-note').style.display = 'none';
-        document.getElementById('msg-success').style.display = 'block';
-      } else if (data.error === 'already_registered') {
-        document.getElementById('notify-form').style.display = 'none';
-        document.getElementById('notify-note').style.display = 'none';
-        document.getElementById('msg-duplicate').style.display = 'block';
-      } else {
-        document.getElementById('msg-error').style.display = 'block';
-        btn.disabled    = false;
-        btn.textContent = 'Notify Me';
-      }
+      // With no-cors we always land here on network success
+      document.getElementById('notify-form').style.display = 'none';
+      document.getElementById('notify-note').style.display = 'none';
+      document.getElementById('msg-success').style.display = 'block';
 
     } catch (err) {
       document.getElementById('msg-error').style.display = 'block';
